@@ -1,0 +1,11 @@
+.env
+__pycache__/
+*.pyc
+.ruff_cache/
+eval/results/*.json
+eval/results/*.csv
+!eval/results/.gitkeep
+.ipynb_checkpoints/
+dist/
+*.egg-info/
+.venv/
