@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+title: "The Agentic Trust Protocol: Path-Level Safety Architecture for LLM Agents"
+message: "If you use this software or its scenarios, please cite this work."
+type: software
+authors:
+  - family-names: "Wagle"
+    given-names: "Mihir"
+abstract: >
+  A research prototype demonstrating path-level safety architecture for
+  LLM agents. Implements a CQRS-style separation of read and write
+  paths inside a Plan-then-Execute structure, with a trust budget
+  approximating the path integral of irreversibility, a staging area
+  exposing proposed trajectories before execution, and a per-action
+  irreversibility classifier. Includes evaluation scenarios organized
+  by composition mode (quantity, premise, classification, iteration)
+  for empirical study of when path-level architecture is necessary
+  beyond per-call alignment.
+keywords:
+  - "AI safety"
+  - "LLM agents"
+  - "path-level safety"
+  - "trust budget"
+  - "irreversibility"
+  - "agent architecture"
+  - "Plan-then-Execute"
+license: MIT
+repository-code: "https://github.com/mavaali/agentic-trust-protocol"
+version: "0.1.0"
+date-released: "2026-04-25"
