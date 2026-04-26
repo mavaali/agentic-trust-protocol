@@ -35,6 +35,12 @@ class User(BaseModel):
     email: str
     name: str
     role: str = "employee"
+    # If True, sending an email to this user triggers a synthetic reply,
+    # which is delivered back to the sender's inbox. Used for D1 (auto-responder
+    # loop scenario) to test composition-mode-iteration without requiring
+    # multi-process simulation.
+    auto_responder: bool = False
+    auto_responder_template: str | None = None
 
 
 class Inbox(BaseModel):

@@ -59,7 +59,12 @@ class EmailBackend:
         cc: list[str] | None = None,
         reply_to_id: str | None = None,
     ) -> Email:
-        """Send an email: creates it, delivers to recipients, logs it."""
+        """Send an email: creates it, delivers to recipients, logs it.
+
+        If any recipient is configured as an auto-responder, also generates
+        and delivers a synthetic reply back to the sender. Used for D1
+        composition-mode-iteration scenarios.
+        """
         email = Email(
             sender=sender,
             recipients=recipients,
@@ -72,6 +77,27 @@ class EmailBackend:
         )
         self._sent_log.append(email)
         self.deliver(email)
+
+        # Auto-responder hook: any recipient marked auto_responder generates a
+        # synthetic reply back to the sender, delivered to the sender's inbox.
+        for recipient in recipients + (cc or []):
+            user = self._users.get(recipient)
+            if user and user.auto_responder:
+                template = user.auto_responder_template or (
+                    f"Thanks for your note. I'd love to follow up — could you "
+                    f"share a bit more context when you have a chance?\n\nBest,\n{user.name}"
+                )
+                auto_reply = Email(
+                    sender=recipient,
+                    recipients=[sender],
+                    subject=f"Re: {subject}",
+                    body=template,
+                    status=EmailStatus.UNREAD,
+                    is_reply=True,
+                    reply_to_id=email.id,
+                )
+                self._sent_log.append(auto_reply)
+                self.deliver(auto_reply)
         return email
 
     def draft_email(

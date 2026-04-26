@@ -138,5 +138,20 @@ class WritePath:
             )
             console.print("[green]Draft created.[/green]")
 
+        elif action.action_type == "schedule_meeting":
+            attendees = params.get("attendees", [])
+            self.backend.send_email(
+                sender=self.agent_email,
+                recipients=attendees,
+                subject=f"Calendar invite: {params.get('subject', '')}",
+                body=(
+                    f"Date: {params.get('date', '')}\n"
+                    f"Time: {params.get('start_time', '')} - {params.get('end_time', '')}\n"
+                    f"Location: {params.get('location', '')}\n\n"
+                    f"{params.get('description', '')}"
+                ),
+            )
+            console.print(f"[green]Calendar invite sent to {len(attendees)} attendees.[/green]")
+
         else:
             logger.warning("unknown_action", action_type=action.action_type)
