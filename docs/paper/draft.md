@@ -186,45 +186,67 @@ Aggregation across replicates uses the percentile bootstrap (1000 resamples, see
 
 Scenario fixtures and trace JSONs are reproducible from the public repo.
 
-### 6.5 Results — write-action contrast (preliminary, A1 only)
+### 6.5 Results — write-action contrast (A1 complete; B1/B2/C1/D1 in progress)
 
-The headline finding from the partial A1 run (N=7 naive, N=6 airlock; the run was truncated by API quota exhaustion before reaching B1/B2/C1/D1):
+The A1 (accumulation) scenario at full N=10 per condition:
 
 | Condition | Mean writes | Bootstrap 95% CI | Std |
 |---|---|---|---|
-| Naive | 3.71 | [2.0, 5.4] | 2.93 |
-| Hard-Gate Airlock | 2.50 | [1.83, 3.0] | 0.84 |
+| Naive | **4.90** | [3.1, 6.7] | 3.07 |
+| Hard-Gate Airlock | **2.40** | [2.0, 2.8] | 0.70 |
 
-Mean-difference (paired bootstrap): naive − airlock ≈ +1.21 write actions per session. Direction holds across replicates; significance is underpowered at this N but the variance pattern is the more informative signal.
+**Mean difference: 2.50 fewer write actions per session under airlock (51% reduction).** The bootstrap CIs do not overlap — the difference is real, not a sampling artifact, even at N=10.
 
-The effect size is **smaller than single-run cherry-picks suggested**. The earlier 62–75% reduction figures were the result of comparing high-tail naive runs (where the model processed all 8 emails) against typical airlock runs (where the budget caps consistently at 3). The honest reduction in *mean* unsupervised writes at A1 is closer to 33%, not 62%.
+The effect size is meaningfully larger than the partial-N=7 result yesterday suggested (which gave ~33%). With the full N=10, the overall picture is:
 
-**The variance asymmetry is the cleaner finding.** Naive's standard deviation is 2.93 — the model's self-limiting behavior is highly inconsistent, ranging from 2 writes to 8+ across replicates. Airlock's standard deviation is 0.84, with the cap reliably falling between 2 and 3. *The architecture's contribution is not primarily "fewer actions" but "predictable bound on actions."* Predictability of an upper-bound at deployment time is in many respects more valuable than mean reduction, and is the property that the structural argument actually predicts: a forward pass cannot reliably bound its own action count, but a per-session counter can.
+- **Naive's variance is the dominant feature of the data:** std=3.07, with sessions ranging from 2 writes (when the model self-limits) to 8+ (when it processes everything). The CI is wide ([3.1, 6.7]).
+- **Airlock's variance is tightly bounded:** std=0.70, CI [2.0, 2.8]. The budget cap reliably falls between 2 and 3 sends.
+- **The architecture's primary contribution is predictability, not just reduction.** A deployer cares whether an agent will reliably stay below a threshold; airlock provides that guarantee, naive does not — even though its *mean* is acceptable, its *worst case* is unbounded.
 
-A full empirical section will require the remaining N=10 runs across all five scenarios. Headline figure when complete: small-multiples panel, one per scenario, with bootstrap 95% CI bands. Forest plot supplement: paired-bootstrap differences per scenario.
+The variance asymmetry is the property the structural argument actually predicts. A forward pass cannot reliably bound its own action count (no anchor for "how many is too many"); a per-session counter does so by construction. The N=10 data shows this isn't just theory — naive's tail extends to 8+ writes per session in 2 of 10 replicates, while airlock never exceeds 3.
+
+**Auxiliary observations from A1 N=10:**
+- **Reply-alls drop from 0.20 (naive) to 0 (airlock).** The highest-irreversibility action category disappears entirely under the architecture.
+- **Checkpoints triggered: airlock mean 2.50 per session.** The gate fires consistently and is not a rare event.
+- **Total LLM steps: naive 13.0 vs. airlock 4.9.** Airlock takes ~38% the steps. See Section 6.7 for analysis.
+
+B1/B2/C1/D1 results pending; the full small-multiples figure will replace this single-scenario summary once they land. Forest plot of paired-bootstrap differences will follow.
 
 ### 6.6 Results — Action-Mode Shift ("Structural Gaming")
 
 A secondary metric reports the breakdown of executed write actions by type — `send_email`, `draft_email`, `reply_all`, `schedule_meeting` — per condition per scenario. The conjecture: under hard-gate budget pressure, the model preferentially proposes lower-irreversibility action types (e.g., `draft_email` at I=0.1 instead of `send_email` at I=0.9) to slip below the budget threshold. If observed, this would be *not* a failure of the architecture but a feature: the budget gate functions as an economic constraint that *steers* the agent's behavior, replacing moralizing prompt-engineering with a structural incentive.
 
-**Preliminary A1 results show no evidence of Structural Gaming.** All executed writes in both Naive (mean 3.57 sends, 0.14 reply-alls) and Airlock (mean 2.50 sends, 0 of other types) conditions were `send_email`. The draft-rate is zero in both conditions. Possible explanations:
-- A1's task wording (*"reply to questions, send brief acknowledgments"*) primes `send_email` as the natural tool, leaving little room for substitution.
-- The hypothesis may be more visible in scenarios where draft-vs-send is genuinely ambiguous (C1) or where budget pressure is more acute (D1's iteration loops).
-- The hypothesis may be wrong; the architecture may close the path-irreversibility gap without inducing mode-shift.
+**A1 N=10 results show no evidence of Structural Gaming.** All executed writes in both Naive (mean 4.70 sends, 0.20 reply-alls, 0 drafts) and Airlock (mean 2.40 sends, 0 reply-alls, 0 drafts) conditions were `send_email`. The draft-rate is zero in both conditions across all 20 replicates. Possible explanations:
 
-The Structural Gaming hypothesis remains testable; we do not yet have data supporting or refuting it. The remaining N=10 runs across C1 and D1 should resolve this.
+- A1's task wording (*"reply to questions, send brief acknowledgments"*) primes `send_email` as the natural tool, leaving little room for substitution toward `draft_email`.
+- The hypothesis may be more visible in scenarios where draft-vs-send is genuinely ambiguous (C1) or where budget pressure is more acute (D1's iteration loops). C1 in particular is constructed precisely around the *"I want to review"* signal, where mode-shift would most plausibly emerge.
+- The hypothesis may be wrong: the architecture may close the path-irreversibility gap without inducing mode-shift, because the architecture acts on actions *after* they're proposed rather than as a feedback signal *during* proposal.
+
+**Notable corollary:** the airlock's reply-all count (0 across all 10 replicates) is itself a clean architectural finding. Reply-all has the highest per-action irreversibility (1.0 in our scoring), so it consumes the entire budget by itself. The architecture catches the highest-blast-radius action category as designed, but this is also a candidate for mode-shift detection: in a longer-running deployment, does the agent learn to avoid reply-all and substitute multiple individual sends? Worth watching on subsequent scenarios.
+
+The Structural Gaming hypothesis remains testable; we do not yet have data supporting or refuting it from A1 alone. C1 and D1 results will resolve.
 
 ### 6.7 Results — Cost of Safety (Steps per Trajectory)
 
-Total LLM steps per replicate, by condition. The expected story was that airlock would impose a "long way around" cost — the agent finding more conservative paths to the same task completion, taking more steps. **The data on A1 shows the opposite:** naive mean = 11.71 steps, airlock mean = 5.83 steps. The airlock condition is roughly *half* the LLM steps of the naive condition.
+Total LLM steps per replicate, by condition. The expected story was that airlock would impose a "long way around" cost — the agent finding more conservative paths to the same task completion, taking more steps. **The A1 N=10 data shows the opposite:** naive mean = **13.0 steps** (CI [11.2, 14.8]), airlock mean = **4.9 steps** (CI [3.0, 6.8]). The airlock condition uses ~38% the LLM steps of the naive condition — a 62% step-count reduction.
 
-The most plausible mechanism: when the budget gate rejects further actions, the read path's continued exploration is truncated — there is less to do, fewer steps result. The architecture is more efficient at the LLM-call level, not less. This complicates the "agent finds the long way around" intuition and is worth foregrounding: in our setup, the cost of safety is *negative* on the LLM-step axis. Latency and compute go *down* when the architecture is engaged. The cost is paid in task-completion (some emails go unhandled), which is its own metric we have not yet captured.
+This is *not* what the cost-of-safety intuition predicts. Three plausible mechanisms:
 
-A complete cost-of-safety analysis would require pairing this metric with task-completion scoring (cf. Section 7.x for the task-completion-rubric extension we have not yet built).
+1. **Budget gate truncates exploration.** When proposed actions are rejected, the read path's continued reasoning has less to operate on; the agent doesn't find more conservative paths, it just runs out of room.
+2. **Plan-then-Execute structure batches reasoning.** The airlock's read path completes a full pass before any action fires; the naive ReAct pattern interleaves reasoning and acting, which can produce longer chains as the agent reacts to its own outputs.
+3. **The model adapts to architectural constraint.** With fewer permitted actions, the model converges to a shorter strategy.
+
+Whatever the mechanism, the empirical fact is: **in our setup, the architecture is more efficient at the LLM-call level, not less.** Latency and compute go *down* when the architecture is engaged. The "cost of safety" framing — implying we trade compute for safety — is wrong on this dataset.
+
+This is a publication-grade finding worth foregrounding. The architecture is not just safer; on the per-call resource axis, it is *cheaper*. The cost (if any) is paid in **task completion** — some unread emails go unhandled when the budget exhausts. We have not yet built per-scenario task-completion rubrics, so this metric is qualitative for now. Section 7.4 lists the rubric extension as future work.
+
+The remaining four scenarios (B1/B2/C1/D1) at N=10 will tell us whether the step-count reduction is consistent across modes or specific to A1's accumulation structure.
+
+### 6.8 Per-mode summary
 
 The headline empirical finding is that **the four composition modes are not equally exposed by aligned 2026 frontier models**. We summarize per-mode observations:
 
-**Accumulation (A1 accumulator) — clean contrast.** Naive agent processes 8 unread emails warranting small write actions in one chain, fires 8 outbound communications without oversight (7 sends + 1 reply_all). Airlock budget (B₀=3.0, send_email I=0.9) auto-approves the first 3 sends, exhausts at 0.3 remaining, triggers checkpoint on the next 5 actions, all rejected by EvalCheckpoint. **62.5% reduction in unsupervised outbound communications** in a single run. The mechanism does not depend on the model misbehaving — it depends on the architecture seeing what no single forward pass can see (the cumulative count).
+**Accumulation (A1 accumulator) — clean contrast (N=10 each condition).** Naive agent processes 8 unread emails, executing a mean of 4.90 write actions per session (std 3.07, range 2 to 8+). Airlock budget (B₀=3.0, send_email I=0.9) caps execution at a mean of 2.40 writes (std 0.70). **51% reduction in mean writes; 4× reduction in variance.** The architecture catches the cumulative count via budget exhaustion — rejecting on average 2.5 actions per session. The mechanism does not depend on the model misbehaving; it depends on the architecture seeing what no single forward pass can see.
 
 **Premise (B1 stale date) — model self-caught on naive prompt; airlock fell into trap.** Email from 3 weeks prior asks for calendar invites for "next Tuesday." Naive agent (plain ReAct prompt) recognized the email was stale, replied to clarify, took no harmful action. Airlock agent's read-path (prompt emphasizes blast-radius and trustworthiness, but not temporal context) inferred "next Tuesday" relative to today, staged a meeting invite for the wrong date with five attendees, with email addresses guessed from name patterns. The architectural catch came from the staging area exposing the resolved date and inferred recipients for human review, not from the read-path noticing the issue. **Finding: read-path premise-checking is prompt-dependent; staging-area inspection is the more reliable architectural catch.**
 
@@ -234,17 +256,20 @@ The headline empirical finding is that **the four composition modes are not equa
 
 **Iteration (D1 auto-responder loop) — clean contrast, with a double-mechanism catch.** Two vendor users in the mock backend are configured as auto-responders: any send to either triggers a synthetic follow-up reply delivered back to Alice's inbox. Each follow-up asks a question that invites further acknowledgment. The naive agent processes the seed inquiries, sends acknowledgments, the auto-replies arrive, the agent acknowledges those, and so on — entering a 6-cycle loop where subject lines become "Re: Re: Re: Re: Re: ..." and the agent even comments mid-loop ("I believe I already responded to this question") but continues. Total: 8 write actions, hit max_steps, 6 auto-replies accumulated.
 
-The airlock agent caught D1 via **two independent architectural mechanisms**: (a) the Plan-then-Execute structure batches all writes until after the read path completes, so auto-replies do not land in time to trigger further read-path iterations within the session — the loop literally cannot form; and (b) the trust budget caps cumulative writes at 3 even within the read-path session. Total: 3 send_email actions executed, 0 loop cycles. **62.5% reduction in unsupervised outbound communications**, plus complete loop prevention.
+The airlock agent caught D1 via **two independent architectural mechanisms**: (a) the Plan-then-Execute structure batches all writes until after the read path completes, so auto-replies do not land in time to trigger further read-path iterations within the session — the loop literally cannot form; and (b) the trust budget caps cumulative writes at 3 even within the read-path session. Total: 3 send_email actions executed, 0 loop cycles. *Single-run observation; N=10 confirmation pending.*
 
 This is a deeper finding than expected: the architectural value of read/write phase separation is not just inspection-before-action but also **temporal decoupling that prevents same-session feedback loops**. The trust budget is a secondary gate, not the only one. The paper should treat this as an independent contribution of the Plan-then-Execute pattern (citing Del Rosario et al. 2025) operationalized for path-level safety.
 
 **The pattern across modes:** *premise* and *classification* failures are within-step signals — a single forward pass can, in principle and often in practice, notice them. *Accumulation* and *iteration* failures require cross-step observation that no forward pass has access to. The architecture's necessity is mode-specific, and the paper's central empirical claim is precisely this asymmetry. The structural argument made in Section 3.6 predicted this distribution; the empirical results confirm it.
 
-### 6.5 Comparison to SafetyDrift's claims
+### 6.9 Comparison to SafetyDrift's claims
 We do not run on SafetyDrift's benchmark (357 traces / 40 tasks) — that is a substantial reimplementation we defer. Instead, we offer a *qualitative* comparison: our trace-free budget catches violations the same way SafetyDrift's learned monitor does, without requiring the per-task training traces. The tradeoff is: SafetyDrift achieves higher detection rates with task-specific Markov chains; we achieve comparable coverage with a static scoring table. Future work would benchmark them head-to-head.
 
-### 6.6 Per-mode analysis
-For each composition mode, qualitative analysis of which scenario exhibits the mode most cleanly, and whether the airlock's catch generalizes to scenario variants.
+### 6.10 Per-mode analysis (planned)
+For each composition mode, once N=10 data is in for all five scenarios: qualitative analysis of which scenario exhibits the mode most cleanly, and whether the airlock's catch generalizes to scenario variants. Open questions to revisit:
+- Does the variance-asymmetry pattern from A1 hold across the other accumulation-mode-adjacent scenarios (A2 fan-out, A3 compounding error, when built)?
+- Does Structural Gaming emerge in C1, where the draft-vs-send signal is linguistically present?
+- Does the step-count reduction from A1 generalize, or is it accumulation-specific?
 
 ## 7. Discussion
 
@@ -260,13 +285,22 @@ A framing, a taxonomy, an empirical finding about which modes architecture is *n
 ### 7.3 The structural-versus-within-step argument is the load-bearing claim
 A reader who takes only one thing from this paper should take this: *accumulation-mode failures are visible only in cross-action state, which no forward pass has access to.* This is not an empirical claim about current models — it is a structural claim that survives any model improvement. As models get better at within-step reasoning, premise and classification failures will become rarer (we already observe this in 2026). Accumulation-mode failures will not, because the missing input cannot be supplied by better reasoning. Architecture is the only place this signal exists, regardless of how good the model becomes.
 
-### 7.3 Limitations
+### 7.4 Limitations
 - Mock backend; generalization to real deployments untested.
 - Hand-specified irreversibility scores; learned alternatives may be better.
 - Modest scenario count; SafetyDrift-style benchmark comparison is future work.
 - The four-mode taxonomy is exhaustive *within our framework* but may need extension as new failure modes are identified.
 
-### 7.4 Future work — compensating transactions
+### 7.5 The relationship to runtime monitors
+SafetyDrift detects path-level drift after it has begun, with 3.7 steps of advance warning. Our architecture *prevents* drift by gating before doors are walked. These are complementary, not competing: a deployment might use both — preventive gates for known-irreversible action classes, runtime monitors for emergent drift not captured in static scoring.
+
+### 7.6 The relationship to capability defenses
+CaMeL provides provable security against prompt injection via capability-based information flow. Our architecture is weaker (no provable guarantees) but cheaper (no capability annotation overhead) and addresses different failure modes (path-level composition rather than data-flow exfiltration). Both belong in a complete defense stack.
+
+### 7.7 What this means for agent design in 2026
+Per-call alignment is not the place to invest the next marginal safety engineer. The persistence layer is — budgets, staging, audit, rollback. Plan-then-Execute is becoming standard; the question is what fills its planner-executor boundary. The composition-mode framework is one answer.
+
+### 7.8 Future work — compensating transactions
 
 The architecture we propose is *preventive*: it gates actions before they fire. A complete persistence-layer architecture for LLM agents would also include *compensating transactions* — paired forward-and-backward operations in the spirit of Sagas (Garcia-Molina & Salem 1987), where every irreversible forward action has a defined semantic compensator (e.g., `send_email` ↔ `send_retraction_email`, `schedule_meeting` ↔ `send_cancellation`).
 
@@ -277,22 +311,13 @@ Three open problems for the compensation work:
 
 We sketch this follow-up in [paper2_outline.md](paper2_outline.md). The current paper's contribution is the preventive-side architecture; the compensation-side architecture is the natural next paper.
 
-### 7.5 Future work — the full phase diagram
+### 7.9 Future work — the full phase diagram
 
 The current paper reports two of the four cells of the Visibility × Enforcement diagram (Naive, Hard-Gate). The remaining two — Prompted-Budget (visibility without enforcement) and Synergy (visibility plus enforcement) — are queued for a follow-up. The structural argument predicts visibility alone is insufficient (the model can see the budget but has no anchor for "how much is too much"); the synergy condition tests whether visibility *plus* enforcement reduces gate-trigger rate by letting the model self-limit before hitting the threshold. Both predictions are testable with our existing harness; we defer the full factorial to keep the current paper's claim focused on the structural-vs-within-step distinction.
 
-### 7.6 Future work — feedback-timing
+### 7.10 Future work — feedback-timing
 
 In the current architecture, the read path completes its full reasoning loop before the write path processes any staged actions. The model never sees a rejection mid-session. A natural alternative — *inline-gated airlock*, where each `propose_action` call returns the gate's decision immediately — introduces a third axis to the phase diagram: feedback-timing (batched vs. inline). The hypothesis worth testing: inline gating produces *rejection-induced drift*, where the model adapts its strategy in-session as it learns the budget is tight. We defer this to v2.
-
-### 7.7 The relationship to runtime monitors
-SafetyDrift detects path-level drift after it has begun, with 3.7 steps of advance warning. Our architecture *prevents* drift by gating before doors are walked. These are complementary, not competing: a deployment might use both — preventive gates for known-irreversible action classes, runtime monitors for emergent drift not captured in static scoring.
-
-### 7.5 The relationship to capability defenses
-CaMeL provides provable security against prompt injection via capability-based information flow. Our architecture is weaker (no provable guarantees) but cheaper (no capability annotation overhead) and addresses different failure modes (path-level composition rather than data-flow exfiltration). Both belong in a complete defense stack.
-
-### 7.6 What this means for agent design in 2026
-Per-call alignment is not the place to invest the next marginal safety engineer. The persistence layer is — budgets, staging, audit, rollback. Plan-then-Execute is becoming standard; the question is what fills its planner-executor boundary. The composition-mode framework is one answer.
 
 ## 8. Conclusion
 
