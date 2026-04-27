@@ -67,7 +67,7 @@ Therefore: **per-call alignment is structurally incapable of evaluating path irr
 
 `I*(π, W₀) = 1` can arise from any of four mechanisms (see [failure-catalog.md](failure-catalog.md) for cases):
 
-1. **Quantity:** `n` is large enough that retracing all `n` actions is infeasible regardless of individual `I(aᵢ)`.
+1. **Accumulation:** `n` is large enough that retracing all `n` actions is infeasible regardless of individual `I(aᵢ)`.
 2. **Premise:** Some `aᵢ` is correct given a premise that turns out to be wrong; subsequent actions condition on the wrong premise; reversal requires identifying which premise broke.
 3. **Classification:** The model assigns `aᵢ` an incorrect `I(aᵢ)` (treats a one-way door as two-way), so `aᵢ` is taken under false reversibility assumptions.
 4. **Iteration:** A locally-reversible loop exits the recoverable region of state space because each iteration moves the world.
@@ -110,6 +110,6 @@ The original parameters (`B₀ = 3.0`, `send_email I = 0.9`, `reply_all I = 1.0`
 
 > For any path `π = (a₁, …, aₙ)` with `n ≥ 2` and `I(aᵢ) < 1` for all `i`, there exist world states `W₀` and action sequences `π` such that `I*(π, W₀) = 1`.
 
-**Sketch.** Construct `π` so that `aⱼ` for `j > 1` conditions on the state change caused by `a₁`. Specifically, let `a₂` reference content delivered by `a₁`, `a₃` reference content delivered by `a₂`, and so on. After step 2, reversing `a₁` requires also reversing `a₂` (else `a₂` is incoherent); after step 3, reversing `a₂` requires reversing `a₃`; etc. The reversal cost grows with `n`, and at sufficient `n` the cost exceeds any practical threshold — in the limit, `I*(π) → 1` even when each `I(aᵢ)` remains bounded below 1. This corresponds to composition mode 1 (quantity). Analogous constructions exist for modes 2 (premise), 3 (classification), and 4 (iteration).
+**Sketch.** Construct `π` so that `aⱼ` for `j > 1` conditions on the state change caused by `a₁`. Specifically, let `a₂` reference content delivered by `a₁`, `a₃` reference content delivered by `a₂`, and so on. After step 2, reversing `a₁` requires also reversing `a₂` (else `a₂` is incoherent); after step 3, reversing `a₂` requires reversing `a₃`; etc. The reversal cost grows with `n`, and at sufficient `n` the cost exceeds any practical threshold — in the limit, `I*(π) → 1` even when each `I(aᵢ)` remains bounded below 1. This corresponds to composition mode 1 (accumulation). Analogous constructions exist for modes 2 (premise), 3 (classification), and 4 (iteration).
 
 A formal proof is out of scope; the empirical demonstration is the paper's contribution.

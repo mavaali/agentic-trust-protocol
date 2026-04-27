@@ -110,7 +110,7 @@ The path-irreversibility claim is held by Arthur 1989 (economics), Krakovna 2018
 
 The contribution that survives this lit map:
 - The **door-composition framing** applied specifically to LLM agents in the post-aligned-model era.
-- The **four composition modes** (quantity, premise, classification, iteration) as an analytic taxonomy not present in any prior work.
+- The **four composition modes** (accumulation, premise, classification, iteration) as an analytic taxonomy not present in any prior work.
 - A **trace-free, preventive operationalization** (trust budget + staging + classifier) inside the Plan-then-Execute skeleton, as an alternative to SafetyDrift's empirical learned monitor.
 - An **empirical demonstration** that aligned 2026 frontier models produce path-level failures across all four modes, organized by composition mode rather than harm category.
 

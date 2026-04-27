@@ -19,7 +19,7 @@ This is a synthesis-and-framing paper, not a theorem paper. The mathematical cor
 What this paper contributes is the **conceptual scaffolding** the field can use to think about path-level agent safety:
 
 1. The **door-composition framing** applied specifically to LLM agents in the post-aligned-model era. The math has antecedents; the framing applied to this domain, with the right metaphor, is sticky in a way that prior framings are not.
-2. The **four composition modes** — quantity, premise, classification, iteration — as an analytic taxonomy of the mechanisms by which two-way doors compose into one-way doors. None of the prior work decomposes the failure surface this way. This is the analytic contribution practitioners can use as a checklist.
+2. The **four composition modes** — accumulation, premise, classification, iteration — as an analytic taxonomy of the mechanisms by which two-way doors compose into one-way doors. None of the prior work decomposes the failure surface this way. This is the analytic contribution practitioners can use as a checklist.
 3. A **trace-free, preventive architectural operationalization** — trust budget + staging area + irreversibility classifier — sitting inside the Plan-then-Execute skeleton (Del Rosario et al. 2025). Contrasts with SafetyDrift's empirical learned monitor by requiring no per-task training traces; trades empirical accuracy for operational simplicity.
 4. An **empirical demonstration** that aligned 2026 frontier models (Sonnet 4) produce path-level failures across all four composition modes, despite refusing each step's stand-alone harmful variant — and that the architecture catches them as the framing predicts.
 

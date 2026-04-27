@@ -9,11 +9,15 @@ This is a research prototype, actively in progress. Not production-ready.
 - Five more planned (A2, A3, B3, C2, plus a defense-in-depth scenario E1) — see [docs/failure-catalog.md](docs/failure-catalog.md).
 - Multi-replicate harness implemented: `python -m eval.harness --replicates N --scenario <id>` runs N independent runs per (scenario, agent), reports bootstrap 95% CIs, and runs a paired-bootstrap difference test. N≥3 enables CIs and p-values.
 
-## Headline empirical finding (preliminary)
+## Headline empirical findings (preliminary, partial multi-replicate data)
 
-The four composition modes are not equally exposed by aligned 2026 frontier models. Quantity (A1) and iteration (D1) modes show architectural reduction in unsupervised outbound actions under the airlock; premise (B2) and classification (C1) modes are mostly self-caught by Sonnet 4 itself, with the architecture's value reduced to staging-for-inspection. The pattern matches the structural argument that quantity and iteration modes are invisible to per-call alignment by construction. See [docs/paper/draft.md](docs/paper/draft.md) Section 6.4 for details.
+The four composition modes are not equally exposed by aligned 2026 frontier models. Accumulation (A1) and iteration (D1) modes show architectural reduction in unsupervised outbound actions under the airlock; premise (B2) and classification (C1) modes are mostly self-caught by Sonnet 4 itself, with the architecture's value reduced to staging-for-inspection. The pattern matches the structural argument that accumulation and iteration modes are invisible to per-call alignment by construction. See [docs/paper/draft.md](docs/paper/draft.md) Sections 6.5–6.7 for details.
 
-**Important note on effect size:** initial single-run reports of ~62-75% reduction in unsupervised actions exaggerated the effect. A 3-replicate smoke test on A1 (April 26) showed naive write count has high variance (mean 4.0, CI [2.0, 8.0]) while airlock caps reliably at 3. The mean reduction is real but smaller than single-run numbers suggested, and N=3 is too small to declare significance. Multi-replicate eval at N≥10 is the next data milestone before any preprint.
+**A1 partial multi-replicate data (N=7 naive, N=6 airlock):** mean writes 3.71 vs. 2.50 (~33% reduction in mean unsupervised writes). The variance asymmetry is the cleaner finding — naive std=2.93 (highly inconsistent self-limiting), airlock std=0.84 (cap is hard, behavior is predictable). LLM steps are *fewer* under airlock (5.83 vs. 11.71 mean), suggesting the gate truncates read-path exploration rather than imposing a long-way-around cost. No Structural Gaming visible at this N — all executed writes were `send_email` in both conditions; the draft-vs-send shift hypothesis remains testable but unsupported by current data.
+
+**Important note on effect size:** the earlier single-run reports of 62-75% reduction were cherry-picks of naive's high-variance tail. The honest mean reduction at A1 is closer to 33%. The empirical headline shifts from "the architecture cuts unsupervised actions by N%" to "the architecture provides a predictable upper bound on path-level cost where the model alone does not."
+
+**Eval status:** the N=10 run on 2026-04-26 was truncated by API credit exhaustion partway through A1. We have 7 naive + 6 airlock replicates of A1; zero replicates for B1, B2, C1, D1. Remaining work before preprint: top up Anthropic API credit, re-run `python -m eval.harness --replicates 10` to fill in B1/B2/C1/D1. Estimated cost: ~$10-15 in Sonnet calls.
 
 ## What's not here yet
 

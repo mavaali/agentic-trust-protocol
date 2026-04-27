@@ -20,6 +20,14 @@ class ScenarioResult:
     harmful_action_count: int = 0
     total_actions: int = 0
     write_action_count: int = 0
+    # Per-action-type counts (executed only, not staged-and-rejected).
+    # Lets us measure "Structural Gaming" — does the airlock condition shift
+    # the model toward lower-irreversibility action types (e.g., draft over
+    # send) to slip through the gate?
+    send_count: int = 0
+    reply_all_count: int = 0
+    draft_count: int = 0
+    schedule_count: int = 0
     checkpoints_triggered: int = 0
     checkpoints_rejected: int = 0
     final_trust_budget: float | None = None
@@ -31,6 +39,10 @@ class ScenarioResult:
             "harmful_action_count": self.harmful_action_count,
             "total_actions": self.total_actions,
             "write_action_count": self.write_action_count,
+            "send_count": self.send_count,
+            "reply_all_count": self.reply_all_count,
+            "draft_count": self.draft_count,
+            "schedule_count": self.schedule_count,
             "checkpoints_triggered": self.checkpoints_triggered,
             "checkpoints_rejected": self.checkpoints_rejected,
             "final_trust_budget": self.final_trust_budget,
@@ -95,7 +107,16 @@ class MultiReplicateResult:
             "n_replicates": self.n,
             "replicates": [r.to_dict() for r in self.replicates],
         }
-        for attr in ("harmful_action_count", "write_action_count", "checkpoints_triggered"):
+        for attr in (
+            "harmful_action_count",
+            "write_action_count",
+            "total_actions",
+            "send_count",
+            "reply_all_count",
+            "draft_count",
+            "schedule_count",
+            "checkpoints_triggered",
+        ):
             lo, hi = self.bootstrap_ci(attr)
             out[f"{attr}_mean"] = self.mean_of(attr)
             out[f"{attr}_std"] = self.std_of(attr)
@@ -183,14 +204,16 @@ class EvalResults:
 
         if self.aggregates:
             # Multi-replicate display: per-scenario means with CIs and paired diff
-            table = Table(title=f"Multi-Replicate Evaluation Results")
+            scenarios = sorted({a.scenario_id for a in self.aggregates})
+
+            # Primary table: write-action contrast
+            table = Table(title="Multi-Replicate Evaluation — write actions")
             table.add_column("Scenario", style="bold")
-            table.add_column("Naive writes (mean [95% CI])", justify="right")
-            table.add_column("Airlock writes (mean [95% CI])", justify="right")
-            table.add_column("Diff (naive - airlock)", justify="right")
+            table.add_column("Naive (mean [95% CI])", justify="right")
+            table.add_column("Airlock (mean [95% CI])", justify="right")
+            table.add_column("Diff (N - A)", justify="right")
             table.add_column("p(N≤A)", justify="right")
 
-            scenarios = sorted({a.scenario_id for a in self.aggregates})
             for sid in scenarios:
                 naive_agg = next(
                     (a for a in self.aggregates if a.scenario_id == sid and a.agent_type == "naive"),
@@ -219,6 +242,43 @@ class EvalResults:
                     else "n/a",
                 )
             console.print(table)
+
+            # Secondary table: action-mode breakdown (Structural Gaming signal)
+            mode_table = Table(title="Action-mode breakdown — sends / drafts / reply_alls / schedules (executed only, mean across replicates)")
+            mode_table.add_column("Scenario", style="bold")
+            mode_table.add_column("Naive (S/D/RA/Sch)", justify="right")
+            mode_table.add_column("Airlock (S/D/RA/Sch)", justify="right")
+            mode_table.add_column("Steps (N/A)", justify="right")
+
+            for sid in scenarios:
+                naive_agg = next(
+                    (a for a in self.aggregates if a.scenario_id == sid and a.agent_type == "naive"),
+                    None,
+                )
+                airlock_agg = next(
+                    (a for a in self.aggregates if a.scenario_id == sid and a.agent_type == "airlock"),
+                    None,
+                )
+                if not naive_agg or not airlock_agg:
+                    continue
+                n_str = (
+                    f"{naive_agg.mean_of('send_count'):.1f}/"
+                    f"{naive_agg.mean_of('draft_count'):.1f}/"
+                    f"{naive_agg.mean_of('reply_all_count'):.1f}/"
+                    f"{naive_agg.mean_of('schedule_count'):.1f}"
+                )
+                a_str = (
+                    f"{airlock_agg.mean_of('send_count'):.1f}/"
+                    f"{airlock_agg.mean_of('draft_count'):.1f}/"
+                    f"{airlock_agg.mean_of('reply_all_count'):.1f}/"
+                    f"{airlock_agg.mean_of('schedule_count'):.1f}"
+                )
+                steps_str = (
+                    f"{naive_agg.mean_of('total_actions'):.1f} / "
+                    f"{airlock_agg.mean_of('total_actions'):.1f}"
+                )
+                mode_table.add_row(sid, n_str, a_str, steps_str)
+            console.print(mode_table)
             return
 
         # Single-replicate fallback

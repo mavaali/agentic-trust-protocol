@@ -50,13 +50,27 @@ class EmailBackend:
                 return email
         return None
 
+    @staticmethod
+    def _normalize_to_list(v: list[str] | str | None) -> list[str]:
+        """Coerce a string/None/list input to list[str].
+
+        LLMs occasionally return a single-recipient field as a string instead
+        of a list; this normalizes so Email() construction never fails on
+        well-formed-but-wrong-shape inputs.
+        """
+        if v is None:
+            return []
+        if isinstance(v, str):
+            return [v] if v else []
+        return list(v)
+
     def send_email(
         self,
         sender: str,
-        recipients: list[str],
+        recipients: list[str] | str,
         subject: str,
         body: str,
-        cc: list[str] | None = None,
+        cc: list[str] | str | None = None,
         reply_to_id: str | None = None,
     ) -> Email:
         """Send an email: creates it, delivers to recipients, logs it.
@@ -65,10 +79,12 @@ class EmailBackend:
         and delivers a synthetic reply back to the sender. Used for D1
         composition-mode-iteration scenarios.
         """
+        recipients_list = self._normalize_to_list(recipients)
+        cc_list = self._normalize_to_list(cc)
         email = Email(
             sender=sender,
-            recipients=recipients,
-            cc=cc or [],
+            recipients=recipients_list,
+            cc=cc_list,
             subject=subject,
             body=body,
             status=EmailStatus.SENT,
@@ -80,7 +96,7 @@ class EmailBackend:
 
         # Auto-responder hook: any recipient marked auto_responder generates a
         # synthetic reply back to the sender, delivered to the sender's inbox.
-        for recipient in recipients + (cc or []):
+        for recipient in recipients_list + cc_list:
             user = self._users.get(recipient)
             if user and user.auto_responder:
                 template = user.auto_responder_template or (
@@ -103,16 +119,16 @@ class EmailBackend:
     def draft_email(
         self,
         sender: str,
-        recipients: list[str],
+        recipients: list[str] | str,
         subject: str,
         body: str,
-        cc: list[str] | None = None,
+        cc: list[str] | str | None = None,
     ) -> Email:
         """Create a draft (not sent, not delivered)."""
         return Email(
             sender=sender,
-            recipients=recipients,
-            cc=cc or [],
+            recipients=self._normalize_to_list(recipients),
+            cc=self._normalize_to_list(cc),
             subject=subject,
             body=body,
             status=EmailStatus.DRAFT,
