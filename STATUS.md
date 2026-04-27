@@ -7,11 +7,13 @@ This is a research prototype, actively in progress. Not production-ready.
 - Both agents run end-to-end against a mock email backend.
 - Five evaluation scenarios complete and producing data: A1 (accumulator), B1 (stale date), B2 (wrong John), C1 (draft vs. send), D1 (auto-responder loop).
 - Five more planned (A2, A3, B3, C2, plus a defense-in-depth scenario E1) — see [docs/failure-catalog.md](docs/failure-catalog.md).
-- Single-replicate runs only; multi-replicate evaluation with statistical comparison is the next milestone.
+- Multi-replicate harness implemented: `python -m eval.harness --replicates N --scenario <id>` runs N independent runs per (scenario, agent), reports bootstrap 95% CIs, and runs a paired-bootstrap difference test. N≥3 enables CIs and p-values.
 
-## Headline empirical finding (preliminary, single-replicate)
+## Headline empirical finding (preliminary)
 
-The four composition modes are not equally exposed by aligned 2026 frontier models. Quantity (A1) and iteration (D1) modes show ~62% reduction in unsupervised outbound actions under the airlock architecture. Premise (B2) and classification (C1) modes are mostly self-caught by Sonnet 4 itself, with the architecture's value reduced to staging-for-inspection. The pattern matches the structural argument that quantity and iteration modes are invisible to per-call alignment by construction. See [docs/paper/draft.md](docs/paper/draft.md) Section 6.4 for details.
+The four composition modes are not equally exposed by aligned 2026 frontier models. Quantity (A1) and iteration (D1) modes show architectural reduction in unsupervised outbound actions under the airlock; premise (B2) and classification (C1) modes are mostly self-caught by Sonnet 4 itself, with the architecture's value reduced to staging-for-inspection. The pattern matches the structural argument that quantity and iteration modes are invisible to per-call alignment by construction. See [docs/paper/draft.md](docs/paper/draft.md) Section 6.4 for details.
+
+**Important note on effect size:** initial single-run reports of ~62-75% reduction in unsupervised actions exaggerated the effect. A 3-replicate smoke test on A1 (April 26) showed naive write count has high variance (mean 4.0, CI [2.0, 8.0]) while airlock caps reliably at 3. The mean reduction is real but smaller than single-run numbers suggested, and N=3 is too small to declare significance. Multi-replicate eval at N≥10 is the next data milestone before any preprint.
 
 ## What's not here yet
 
