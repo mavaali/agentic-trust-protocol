@@ -23,7 +23,14 @@ console = Console()
 SCENARIOS_DIR = Path(__file__).parent / "scenarios"
 RESULTS_DIR = Path(__file__).parent / "results"
 
-WRITE_ACTION_TYPES = {"send_email", "reply_all", "draft_email", "schedule_meeting"}
+WRITE_ACTION_TYPES = {
+    "send_email",
+    "reply_all",
+    "draft_email",
+    "schedule_meeting",
+    "archive_email",
+    "delete_email",
+}
 
 
 def load_scenarios() -> list[dict[str, Any]]:
@@ -69,6 +76,8 @@ def _classify_traces(traces: list[ActionTrace], scenario: dict[str, Any]) -> dic
     reply_alls = 0
     drafts = 0
     schedules = 0
+    archives = 0
+    deletes = 0
     cp_triggered = 0
     cp_rejected = 0
     for trace in traces:
@@ -86,6 +95,10 @@ def _classify_traces(traces: list[ActionTrace], scenario: dict[str, Any]) -> dic
                 drafts += 1
             elif trace.action_type == "schedule_meeting":
                 schedules += 1
+            elif trace.action_type == "archive_email":
+                archives += 1
+            elif trace.action_type == "delete_email":
+                deletes += 1
         if getattr(trace, "checkpoint_triggered", False):
             cp_triggered += 1
         if was_rejected:
@@ -97,6 +110,8 @@ def _classify_traces(traces: list[ActionTrace], scenario: dict[str, Any]) -> dic
         "reply_alls": reply_alls,
         "drafts": drafts,
         "schedules": schedules,
+        "archives": archives,
+        "deletes": deletes,
         "cp_triggered": cp_triggered,
         "cp_rejected": cp_rejected,
     }
@@ -106,7 +121,9 @@ def run_scenario_naive(scenario: dict[str, Any], llm: LLMClient) -> ScenarioResu
     """Run a single scenario with the naive agent (one replicate)."""
     backend = seed_backend()
     agent = NaiveAgent(backend=backend, llm=llm)
+    llm_before = llm.chat_count
     traces = agent.run(scenario["task"], scenario_id=scenario["id"])
+    llm_steps = llm.chat_count - llm_before
     counts = _classify_traces(traces, scenario)
 
     return ScenarioResult(
@@ -115,11 +132,14 @@ def run_scenario_naive(scenario: dict[str, Any], llm: LLMClient) -> ScenarioResu
         traces=traces,
         harmful_action_count=counts["harmful"],
         total_actions=len(traces),
+        llm_step_count=llm_steps,
         write_action_count=counts["writes"],
         send_count=counts["sends"],
         reply_all_count=counts["reply_alls"],
         draft_count=counts["drafts"],
         schedule_count=counts["schedules"],
+        archive_count=counts["archives"],
+        delete_count=counts["deletes"],
     )
 
 
@@ -128,7 +148,9 @@ def run_scenario_airlock(scenario: dict[str, Any], llm: LLMClient) -> ScenarioRe
     backend = seed_backend()
     checkpoint = EvalCheckpoint()
     agent = AirlockAgent(backend=backend, llm=llm, checkpoint=checkpoint)
+    llm_before = llm.chat_count
     traces = agent.run(scenario["task"], scenario_id=scenario["id"])
+    llm_steps = llm.chat_count - llm_before
     counts = _classify_traces(traces, scenario)
 
     return ScenarioResult(
@@ -137,11 +159,14 @@ def run_scenario_airlock(scenario: dict[str, Any], llm: LLMClient) -> ScenarioRe
         traces=traces,
         harmful_action_count=counts["harmful"],
         total_actions=len(traces),
+        llm_step_count=llm_steps,
         write_action_count=counts["writes"],
         send_count=counts["sends"],
         reply_all_count=counts["reply_alls"],
         draft_count=counts["drafts"],
         schedule_count=counts["schedules"],
+        archive_count=counts["archives"],
+        delete_count=counts["deletes"],
         checkpoints_triggered=counts["cp_triggered"],
         checkpoints_rejected=counts["cp_rejected"],
         final_trust_budget=agent.trust_budget.remaining,
@@ -158,7 +183,11 @@ def run_eval(replicates: int = 1, scenario_filter: str | None = None) -> EvalRes
     """
     all_scenarios = load_scenarios()
     if scenario_filter:
-        scenarios = [s for s in all_scenarios if scenario_filter in s["id"]]
+        # Comma-separated list of substring filters; a scenario matches if any
+        # filter is a substring of its id. This lets callers run a curated
+        # subset (e.g. "A1,B1,B2,C1,D1") without one filter per call.
+        filters = [f.strip() for f in scenario_filter.split(",") if f.strip()]
+        scenarios = [s for s in all_scenarios if any(f in s["id"] for f in filters)]
     else:
         scenarios = all_scenarios
 

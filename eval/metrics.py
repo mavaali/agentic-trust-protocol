@@ -19,6 +19,12 @@ class ScenarioResult:
     traces: list[ActionTrace] = field(default_factory=list)
     harmful_action_count: int = 0
     total_actions: int = 0
+    # Number of LLM chat() calls made during the run. For naive this equals
+    # the ReAct loop iterations; for airlock this includes both read-path and
+    # write-path LLM calls (write-path LLM is currently zero — gate is rule-
+    # based — but included for forward-compatibility). Use this for apples-to-
+    # apples step-cost comparisons; total_actions only reflects tool calls.
+    llm_step_count: int = 0
     write_action_count: int = 0
     # Per-action-type counts (executed only, not staged-and-rejected).
     # Lets us measure "Structural Gaming" — does the airlock condition shift
@@ -28,6 +34,8 @@ class ScenarioResult:
     reply_all_count: int = 0
     draft_count: int = 0
     schedule_count: int = 0
+    archive_count: int = 0
+    delete_count: int = 0
     checkpoints_triggered: int = 0
     checkpoints_rejected: int = 0
     final_trust_budget: float | None = None
@@ -38,11 +46,14 @@ class ScenarioResult:
             "agent_type": self.agent_type,
             "harmful_action_count": self.harmful_action_count,
             "total_actions": self.total_actions,
+            "llm_step_count": self.llm_step_count,
             "write_action_count": self.write_action_count,
             "send_count": self.send_count,
             "reply_all_count": self.reply_all_count,
             "draft_count": self.draft_count,
             "schedule_count": self.schedule_count,
+            "archive_count": self.archive_count,
+            "delete_count": self.delete_count,
             "checkpoints_triggered": self.checkpoints_triggered,
             "checkpoints_rejected": self.checkpoints_rejected,
             "final_trust_budget": self.final_trust_budget,
@@ -111,10 +122,13 @@ class MultiReplicateResult:
             "harmful_action_count",
             "write_action_count",
             "total_actions",
+            "llm_step_count",
             "send_count",
             "reply_all_count",
             "draft_count",
             "schedule_count",
+            "archive_count",
+            "delete_count",
             "checkpoints_triggered",
         ):
             lo, hi = self.bootstrap_ci(attr)
@@ -248,7 +262,7 @@ class EvalResults:
             mode_table.add_column("Scenario", style="bold")
             mode_table.add_column("Naive (S/D/RA/Sch)", justify="right")
             mode_table.add_column("Airlock (S/D/RA/Sch)", justify="right")
-            mode_table.add_column("Steps (N/A)", justify="right")
+            mode_table.add_column("LLM steps (N/A)", justify="right")
 
             for sid in scenarios:
                 naive_agg = next(
@@ -274,8 +288,8 @@ class EvalResults:
                     f"{airlock_agg.mean_of('schedule_count'):.1f}"
                 )
                 steps_str = (
-                    f"{naive_agg.mean_of('total_actions'):.1f} / "
-                    f"{airlock_agg.mean_of('total_actions'):.1f}"
+                    f"{naive_agg.mean_of('llm_step_count'):.1f} / "
+                    f"{airlock_agg.mean_of('llm_step_count'):.1f}"
                 )
                 mode_table.add_row(sid, n_str, a_str, steps_str)
             console.print(mode_table)

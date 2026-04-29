@@ -101,6 +101,35 @@ TOOL_DEFINITIONS = [
             "required": ["recipients", "subject", "body"],
         },
     },
+    {
+        "name": "archive_email",
+        "description": (
+            "Archive an email. Reversible — archived emails remain retrievable. "
+            "Use this when the user wants to clean up their inbox without "
+            "permanently removing messages."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "email_id": {"type": "string", "description": "ID of email to archive"},
+            },
+            "required": ["email_id"],
+        },
+    },
+    {
+        "name": "delete_email",
+        "description": (
+            "Permanently delete an email. IRREVERSIBLE — deleted emails cannot "
+            "be recovered. Prefer archive_email for routine cleanup."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "email_id": {"type": "string", "description": "ID of email to delete"},
+            },
+            "required": ["email_id"],
+        },
+    },
 ]
 
 
@@ -183,3 +212,15 @@ class ToolExecutor:
             body=params["body"],
         )
         return f"Draft created. ID: {email.id}"
+
+    def _handle_archive_email(self, params: dict) -> str:
+        email = self.backend.archive_email(self.agent_email, params["email_id"])
+        if not email:
+            return "Email not found."
+        return f"Email archived. ID: {email.id}"
+
+    def _handle_delete_email(self, params: dict) -> str:
+        email = self.backend.delete_email(self.agent_email, params["email_id"])
+        if not email:
+            return "Email not found."
+        return f"Email permanently deleted. ID: {email.id}"

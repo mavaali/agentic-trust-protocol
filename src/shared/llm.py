@@ -15,6 +15,7 @@ class LLMClient:
     model: str = "claude-sonnet-4-20250514"
     max_tokens: int = 4096
     _client: anthropic.Anthropic | None = field(default=None, repr=False)
+    chat_count: int = 0
 
     def __post_init__(self) -> None:
         api_key = os.environ.get("ANTHROPIC_API_KEY")
@@ -38,6 +39,7 @@ class LLMClient:
             kwargs["system"] = system
         if tools:
             kwargs["tools"] = tools
+        self.chat_count += 1
         return self._client.messages.create(**kwargs)
 
     def complete(self, prompt: str, system: str | None = None) -> str:

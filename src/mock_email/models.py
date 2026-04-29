@@ -13,6 +13,8 @@ class EmailStatus(str, Enum):
     SENT = "sent"
     READ = "read"
     UNREAD = "unread"
+    ARCHIVED = "archived"
+    DELETED = "deleted"
 
 
 class Email(BaseModel):

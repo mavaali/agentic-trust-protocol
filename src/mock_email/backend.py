@@ -134,6 +134,31 @@ class EmailBackend:
             status=EmailStatus.DRAFT,
         )
 
+    def archive_email(self, user_email: str, email_id: str) -> Email | None:
+        """Archive an email — reversible. Status set to ARCHIVED; the email
+        remains retrievable via list_archive() or by id."""
+        inbox = self._inboxes.get(user_email)
+        if not inbox:
+            return None
+        for email in inbox.emails:
+            if email.id == email_id:
+                email.status = EmailStatus.ARCHIVED
+                return email
+        return None
+
+    def delete_email(self, user_email: str, email_id: str) -> Email | None:
+        """Delete an email — irreversible in this mock. Status set to DELETED
+        and the email is removed from the inbox listing. Cannot be recovered."""
+        inbox = self._inboxes.get(user_email)
+        if not inbox:
+            return None
+        for i, email in enumerate(inbox.emails):
+            if email.id == email_id:
+                email.status = EmailStatus.DELETED
+                inbox.emails.pop(i)
+                return email
+        return None
+
     def search_inbox(self, user_email: str, query: str) -> list[Email]:
         inbox = self._inboxes.get(user_email)
         if not inbox:

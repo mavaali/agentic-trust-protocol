@@ -153,5 +153,13 @@ class WritePath:
             )
             console.print(f"[green]Calendar invite sent to {len(attendees)} attendees.[/green]")
 
+        elif action.action_type == "archive_email":
+            self.backend.archive_email(self.agent_email, params.get("email_id", ""))
+            console.print("[green]Email archived.[/green]")
+
+        elif action.action_type == "delete_email":
+            self.backend.delete_email(self.agent_email, params.get("email_id", ""))
+            console.print("[green]Email permanently deleted.[/green]")
+
         else:
             logger.warning("unknown_action", action_type=action.action_type)

@@ -9,3 +9,15 @@ eval/results/*.csv
 dist/
 *.egg-info/
 .venv/
+
+# macOS
+.DS_Store
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
