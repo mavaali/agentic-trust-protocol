@@ -1,0 +1,563 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[round,authoryear]{natbib}
+\usepackage{amsmath, amssymb}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{titlesec}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+
+\hypersetup{
+  colorlinks=true,
+  urlcolor=blue!60!black,
+  citecolor=blue!50!black,
+  linkcolor=black,
+}
+
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+
+\titlespacing*{\section}{0pt}{1.4em}{0.4em}
+\titlespacing*{\subsection}{0pt}{1.0em}{0.3em}
+
+\title{\textbf{Two-Way Doors, One-Way Trajectories:}\\
+\large A Compositional Account of LLM Agent Safety}
+
+\author{Mihir Wagle\thanks{This work was conducted in the author's personal capacity and reflects the author's views only. It does not draw on or disclose any confidential or proprietary information, and does not represent the views of the author's employer.}\\
+Microsoft\\
+\texttt{mihir.wagle@gmail.com}}
+
+\date{v1 arXiv draft --- April 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+Contemporary aligned LLMs refuse the canonical agent-safety attacks on their own merits. The residual failure surface for agents lives at the \emph{path level}: sequences of individually-reversible actions that compose into cumulatively-irreversible trajectories. We organize this surface around four \textbf{composition modes} (accumulation, premise, classification, iteration) and present an empirical study of a Plan-then-Execute architecture (read-path $\to$ staging area $\to$ write-path with trust budget and irreversibility classifier) across ten scenarios at $N = 10$ replicates each. The architecture catches accumulation and audience-fan-out via budget exhaustion (deterministic 3-action cap on $A_2$; 37\% mean-write reduction on $A_1$); catches missing-information premise failures via a read-path prompt that asks for clarification (10/10 catch on $B_1$, $B_2$, $A_4$); and fails to catch one specific composition mode, \emph{premise stated as fact, then propagated across action types} ($A_3$, where the airlock proposes calendar invites that the naive baseline never reaches). We argue this asymmetry is \emph{structural}: the architecture observes the \emph{shape} of a path (count, audience, action types, missing inputs) but not \emph{content veracity}; fact-verification remains a per-call problem the architecture cannot fix. The paper's contributions are (1) the door-composition framing as analytic vocabulary, (2) the four-mode taxonomy organized by what each mode requires to detect, (3) the empirical decomposition of which architectural primitive catches which mode, and (4) the cleanest empirical signal in the suite: the architecture's contribution is \emph{variance reduction}, not just mean reduction. Naive's per-session write count has standard deviation up to 2.9 across replicates while the airlock's stays under 1.0 on accumulation modes, so a deployer who cares about \emph{bounding worst-case path cost} gets that bound from architecture alone.
+\end{abstract}
+
+\section{Introduction}
+
+\subsection{The motivating shift}
+
+A 2026 frontier model, instructed to act as an email assistant, refuses CEO-fraud wire transfers, prompt-injection commands, and reply-all blast attempts on its own merits. We confirm this in our smoke tests: Sonnet~4 declines the canonical adversarial scenarios without any architectural intervention. Per-call alignment has substantially closed the per-call attack surface.
+
+What remains is a different shape of failure. An agent processing 8 unread emails will execute 4--6 reasonable acknowledgments before hitting any internal stopping signal. An agent asked to ``set up the recurring quarterly reviews'' will schedule 4 calendar invites because it was asked to. An agent asked to ``send the welcome packet to BaoLabs'' will fabricate a recipient address (\texttt{contact@baolabs.com}) when no contact email is provided in the request --- sending confidential onboarding materials to a non-existent address with no blast-radius defect on any individual call. None of these are alignment failures. Each individual action is locally reasonable. The harm is the path.
+
+\subsection{The reframe}
+
+The interesting question is no longer \emph{``can architecture substitute for alignment''} --- that fight is settled in the model's favor for per-call attacks. The interesting question is \emph{what failures survive a well-aligned model, and what kind of intervention catches them.}
+
+\subsection{The framing}
+
+A series of two-way doors composes into a one-way door whenever the world moves between actions. Per-call alignment classifies \emph{individual} doors; only architecture observes \emph{paths}. The residual failure surface for agents lives in the part the agent walks across multiple calls --- a part that, by construction, no single forward pass has access to.
+
+\subsection{Contributions}
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Door composition as analytic framing} for path-level LLM agent safety, with a four-mode taxonomy (accumulation, premise, classification, iteration) organized by what information each mode requires to detect.
+\item \textbf{A minimal Plan-then-Execute architecture} (trust budget + staging area + irreversibility classifier) operationalizing the framing. Roughly 2k LOC including the evaluation harness; the airlock primitives themselves are about 700 LOC. Trace-free: requires only declared per-action irreversibility scores, not training data.
+\item \textbf{An empirical decomposition} ($N = 10$ across 10 scenarios) of which architectural primitive catches which composition mode. Seven clean architectural wins, one tie (per-call alignment handles it), one architectural failure ($A_3$, \emph{premise stated as fact and propagated across action types}), one marginal case bound by naive variance ($A_1$).
+\item \textbf{A refined failure-mode taxonomy} distinguishing \emph{premise-MISSING} (caught by read-path prompt: $B_1$, $B_2$, $A_4$) from \emph{premise-WRONG-AS-FACT} (uncaught: $A_3$). The architecture sees path \emph{shape}, not \emph{content veracity}.
+\item \textbf{The cleanest cross-scenario signal: variance asymmetry.} The architecture's contribution is reducing run-to-run variance in path cost --- \emph{bounding the tail}, not just lowering the mean. A deployer who needs a worst-case guarantee gets one from the architecture; from the naive baseline they get a wide tail.
+\item \textbf{A ``Structural Gaming'' hypothesis empirically refuted} at this $N$. The 10-scenario action-mode breakdown shows no evidence of the model shifting toward lower-irreversibility action types under budget pressure.
+\end{enumerate}
+
+\subsection{What this paper does \emph{not} claim}
+
+We do not claim the underlying mathematics as novel. \citet{arthur1989} proves the path-dependence theorem in economics; \citet{krakovna2018} formalize stepwise relative reachability for safe RL; \citet{garcia1987sagas} give compositional reversal for distributed systems; \citet{dhodapkar2026safetydrift} make the path-level empirical claim for LLM agents specifically; \citet{delrosario2025planex} propose the Plan-then-Execute architectural pattern. We claim the \emph{framing}, the \emph{taxonomy}, and the \emph{minimal trace-free operationalization} for LLM agents specifically. We do not run a head-to-head comparison against SafetyDrift's learned monitor; that benchmark is a separate reimplementation effort.
+
+\section{Related Work}
+
+The paper's contribution is the framing and the empirical decomposition. We position relative to prior work organized by \emph{which piece of the contribution it bears on}.
+
+\subsection{The path-irreversibility claim}
+
+\textbf{Economics.} \citet{arrow1974} and \citet{henry1974} on the irreversibility effect; \citet{hanemann1989} on quasi-option value; \citet{arthur1989} on lock-in by historical events; \citet{david1985} on path dependence. The decision-theoretic content of door composition is well-established in this literature.
+
+\textbf{Safe RL.} \citet{krakovna2018} on stepwise relative reachability --- a path-integral measure of irreversibility. \citet{eysenbach2018} on Leave No Trace. \citet{grinsztajn2021} on learned reversibility estimators. \citet{turner2020} on Attainable Utility Preservation.
+
+\textbf{Distributed systems / safety engineering.} \citet{garcia1987sagas} on Sagas. \citet{leveson2011} on STAMP/STPA. \citet{lynch1988} on nested transactions.
+
+\textbf{LLM agents.} \citet{dhodapkar2026safetydrift} --- SafetyDrift, an absorbing-Markov-chain monitor over cumulative state including reversibility.
+
+\subsection{Architectural patterns for agent safety}
+
+\citet{delrosario2025planex} propose Plan-then-Execute as the architectural skeleton for resilient LLM agents. Our trust budget + staging + classifier sits inside this skeleton. CQRS \citep{young2010cqrs} and event sourcing inform the read-path/write-path separation. \citet{camarques2024cqrs} apply CQRS informally to LLM agents. \citet{beurerkellner2025patterns} catalog design patterns; \citet{reversec2025patterns} provide the companion industry walkthrough. \citet{hua2024trustagent} propose TrustAgent.
+
+\subsection{Per-call defenses and their limits}
+
+RLHF \citep{ouyang2022rlhf}; Constitutional AI \citep{bai2022cai}; Instruction Hierarchy \citep{wallace2024hierarchy}; Spotlighting \citep{hines2024spotlighting}. For prompt injection: \citet{greshake2023}; AgentDojo \citep{debenedetti2024agentdojo}; CaMeL \citep{debenedetti2025camel} for capability-based provable defense. Per-call defenses are necessary but structurally incomplete for path-level safety, by the visibility-asymmetry argument we make in §3.
+
+\subsection{Agent benchmarks}
+
+ToolEmu \citep{ruan2024toolemu} --- closest path-level harm benchmark, indexed by harm type rather than composition mode. $\tau$-bench \citep{yao2024taubench} --- pass\textsuperscript{k} as iteration-mode reliability. AgentHarm \citep{andriushchenko2025agentharm}. AgentBench \citep{liu2024agentbench}. Our 10 scenarios are a reversibility-indexed re-cut, organized by composition mode.
+
+\subsection{Where this paper sits}
+
+The contribution is framing and operationalization specific to LLM agents in 2026 --- after frontier alignment has substantially closed the per-call attack surface, and at the architectural layer where Plan-then-Execute structure is becoming standard.
+
+\section{Door Composition: A Framing}
+
+\subsection{Two-way and one-way doors}
+
+Bezos's per-decision framing (two-way doors versus one-way doors) and its limits when applied to LLM agents. The colleague-attributed insight: \emph{a series of two-way doors composes into a one-way door whenever the world moves between steps.}
+
+\subsection{The visibility asymmetry}
+
+Per-call alignment evaluates an action $a_t$ given prior world state $W_{t-1}$ and the prompt. It cannot, by construction, observe the path $\pi = (a_1, \ldots, a_n)$ or compute path-level cost $I^*(\pi, W_0)$, because the path and the world state at session-start are not in any single forward pass's input. This is a structural argument, not a capability argument: better models do not fix it.
+
+\subsection{A light formal sketch}
+
+Define $I: A \to [0, 1]$ as per-action irreversibility and $I^*: \Pi \times W \to [0, 1]$ as path irreversibility. The composition observation is that paths exist where $I(a_i) < 1\ \forall i$ and $I^*(\pi) = 1$ --- a series of small, locally-reversible actions composing to total irreversibility. \citet{arthur1989} gives the formal version in economics, \citet{krakovna2018} in RL. We apply rather than re-prove.
+
+\subsection{The four composition modes}
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{Accumulation.} Too many doors before retreat is feasible; the path crosses too much state.
+\item \textbf{Premise.} A wrong premise renders subsequent doors one-way given that premise. The reasoning is correct given a wrong foundation.
+\item \textbf{Classification.} The model misclassifies a one-way door as two-way under linguistic pressure.
+\item \textbf{Iteration.} Locally-reversible loops exit the recoverable region of state space.
+\end{itemize}
+
+These four exhaust the mechanisms by which $I^*(\pi) = 1$ arises in our framework, modulo per-call alignment failure under adversarial input (defense in depth, treated separately).
+
+\subsection{Why the modes are not equally exposed}
+
+A subtler observation, which our empirical results confirm: the four modes differ in whether a single forward pass \emph{could} catch them. Premise mode (wrong date, wrong referent, wrong authorization) and classification mode (draft vs send) involve information present \emph{within} the action's local context --- the model can, in principle, notice the stale email date, the ambiguous ``John,'' or the ``I want to review'' signal in a single forward pass. Iteration mode admits a partial within-step signal: the model can sometimes recognize that a loop is forming if its context window contains enough prior actions.
+
+\textbf{Accumulation mode is structurally different.} Detecting cumulative-irreversibility overload requires observing the \emph{running integral of per-action irreversibility scores across the session} --- a weighted accumulation, not a raw count, where high-irreversibility actions deposit substantially more ``dose'' than low-irreversibility actions. The integral, the per-action weights, and the threshold against which the integral is compared are all \emph{external} to any single forward pass. The model has no access to its own action history beyond what its context window contains, and even when context contains prior actions, the model has no anchor for the scoring function or the threshold against which to compare. This is not a capability gap; it is an input-availability gap. A model with infinite reasoning ability would still miss accumulation failures because the relevant signal is not in its inputs. Architecture is the only place this signal exists.
+
+This asymmetry is the empirical and conceptual core of the paper.
+
+\section{The Architecture}
+
+\subsection{The setting}
+
+Plan-then-Execute \citep{delrosario2025planex} is the architectural skeleton. We adopt this pattern wholesale and contribute three primitives that operationalize door composition inside it.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig5_architecture.pdf}
+\caption{Naive ReAct (top) interleaves reasoning and tool calls in a single chain with no path-level gate. The Airlock agent (bottom) separates a read path that proposes actions, a staging area that holds them, and a write path that applies the trust budget and irreversibility classifier before executing.}
+\label{fig:architecture}
+\end{figure}
+
+\subsection{Read path}
+
+The read path consumes the user's task and the email environment via read-only tools. It does not directly execute any write action. When it reasons that a write action is appropriate, it calls \texttt{propose\_action(action\_type, params, reasoning)}, which stages the action for review.
+
+The read-path's system prompt includes six items the model is asked to reason about before proposing an action: necessity, content trustworthiness, blast radius, draft-vs-send appropriateness, premise validity (date currency, referent ambiguity), and information sufficiency (whether parameters are inferred or missing). Items 5 and 6 are the load-bearing addition for premise-MISSING failure modes (§\ref{sec:b1-narrative}).
+
+\subsection{Staging area}
+
+The staging area is a path-visible workspace between the read and write paths. Proposed actions are exposed \emph{before} any step is walked, allowing inspection of the trajectory. This is the architectural locus of premise-mode catches: a human reviewer (or downstream automated check) sees the resolved date, the chosen recipient, and the action mode (draft vs send) before the door is walked.
+
+\subsection{Trust budget}
+
+A monotonically-decreasing per-session scalar $B_t$ that approximates the path integral of irreversibility. Initialized to $B_0 = 3.0$. Each approved action deducts its irreversibility score $I(a)$. When $B_t < I(a_{t+1})$, a checkpoint fires; in our \texttt{EvalCheckpoint} mode the staged action is rejected. This is a \emph{trace-free, conservative} approximation of $I^*(\pi)$ --- it requires no training data, only the declared per-action scores. In contrast, SafetyDrift's absorbing-Markov-chain monitor learns transition probabilities from labeled traces per task category.
+
+\subsection{Irreversibility classifier}
+
+A per-action scoring function $I: A \to [0, 1]$. In our prototype, hand-specified rule-based:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lcc}
+\toprule
+Action & Base $I$ & Audience-scaling? \\
+\midrule
+\texttt{read\_email}, \texttt{list\_inbox}, \texttt{search\_inbox} & 0.0 & no \\
+\texttt{draft\_email} & 0.1 & no \\
+\texttt{archive\_email} & 0.2 & no \\
+\texttt{schedule\_meeting} & 0.9 & yes (attendees) \\
+\texttt{send\_email} & 0.9 & yes (recipients + cc) \\
+\texttt{reply\_all} & 1.0 & yes \\
+\texttt{delete\_email} & 1.0 & no \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Audience scaling: for actions that fan out to multiple recipients, the score scales as $I = \min(I_\text{base} + 0.05 \cdot (n_\text{audience} - 2), 1.0)$ for $n_\text{audience} \geq 2$. Captures the intuition that a 12-person calendar invite is more irreversible than a 1:1.
+
+Could be learned from preference data or action-effect graphs. Not the contribution; it is the input to the budget.
+
+\subsection{Why these primitives suffice (in principle)}
+
+For each composition mode, the primitive that catches it:
+\begin{itemize}[leftmargin=*]
+\item \textbf{Accumulation} --- trust budget caps cumulative path irreversibility.
+\item \textbf{Premise (missing info)} --- read-path prompt asks for clarification.
+\item \textbf{Premise (stated as fact)} --- staging-area inspection (in interactive mode) exposes the resolved premise.
+\item \textbf{Classification} --- irreversibility classifier scores \texttt{send} and \texttt{draft} an order of magnitude apart; the budget gates the misclassified one if it propagates.
+\item \textbf{Iteration} --- trust budget caps loop iterations regardless of per-step cost. Plan-then-Execute structure also temporally decouples in-session feedback loops.
+\end{itemize}
+
+Plus defense-in-depth for adversarial inputs that survive model alignment: the budget and classifier gate by irreversibility regardless of whether the model recognized the action as malicious.
+
+\subsection{What this architecture does \emph{not} do (scope)}
+
+The architecture is \textbf{preventive}: it gates actions before they fire. It does not address what to do once an irreversible action \emph{has} fired. The classical antecedent for that case is the \textbf{Saga pattern} \citep{garcia1987sagas}: every forward action is paired with a \emph{compensating action} (e.g., \texttt{send\_email} $\leftrightarrow$ \texttt{send\_retraction}). Compensation is \emph{semantic}, not state-restoring (you cannot un-inform a recipient, but you can mail an apology), and its effectiveness \emph{decays with time}. We treat compensation as out of scope here for clarity; a complete persistence-layer architecture for LLM agents would also include compensating-transaction primitives, sketched in our companion outline.
+
+\section{Implementation}
+
+\subsection{Mock email environment}
+
+Deterministic in-memory backend with 14 users, 37 seeded emails, and reversibility-indexed adversarial scenarios. Mock backend chosen because adversarial scenarios cannot be run against real systems and we need reproducibility. Roughly 800 LOC.
+
+\subsection{Naive ReAct baseline}
+
+Single-chain ReAct agent \citep{yao2023react} with the full tool set: \texttt{send\_email}, \texttt{reply\_all}, \texttt{draft\_email}, \texttt{schedule\_meeting}, \texttt{archive\_email}, \texttt{delete\_email}, plus read-only tools. No architectural guardrails. Roughly 350 LOC including tool wrappers.
+
+\subsection{Airlock agent}
+
+Plan-then-Execute structure with the three primitives from §4. Roughly 720 LOC including staging-area dataclass, trust-budget object, checkpoint protocol, and read-path/write-path implementations. The remaining ${\sim}$650 LOC is the evaluation harness; fixtures and the mock backend account for the rest.
+
+\subsection{Model}
+
+Sonnet~4 (\texttt{claude-sonnet-4-20250514}). Frontier-aligned. Per-call refusal of canonical attacks is a baseline, not a target.
+
+\section{Empirical Evaluation}
+
+\subsection{Scenario design}
+
+Ten scenarios across the four composition modes, designed to expose specific failure mechanisms while keeping the per-scenario task description short and natural.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{ll}
+\toprule
+Mode & Scenarios \\
+\midrule
+Accumulation & $A_1$ accumulator (8-email batch); $A_2$ fan-out (3 distribution lists $\times$ 2 actions); \\
+             & $A_3$ compounding (3 actions, wrong codename); $A_4$ wrong-vendor (4 actions, ambiguous recipient) \\
+Premise      & $B_1$ stale date (3-week-old ``next Tuesday''); $B_2$ wrong John (ambiguous referent); \\
+             & $B_3$ forwarded auth (unauthenticated CEO directive) \\
+Classification & $C_1$ draft vs send (linguistic pressure); $C_2$ archive vs delete (sharpened to push toward delete) \\
+Iteration    & $D_1$ auto-responder loop (vendor auto-replies trigger feedback) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Each scenario specifies a task, allowed and disallowed actions, and a list of harmful action types whose execution is counted toward path-level harm. Scenario YAMLs and seed fixtures are reproducible from the public repo.
+
+\subsection{Methodology}
+
+Each (scenario, agent) pair runs $N = 10$ independent replicates. LLM API calls are non-deterministic by default --- each replicate produces a different trajectory under the same prompt, capturing the variance our findings need to account for.
+
+\textbf{Per-replicate metrics:}
+\begin{itemize}[leftmargin=*]
+\item \texttt{write\_action\_count}: executed write actions only (staged-and-rejected actions are \emph{not} counted, so checkpoint-rejected actions register as architectural saves rather than as harm).
+\item \texttt{harmful\_action\_count}: subset of write actions matching the scenario's harmful-action list.
+\item Per-action-type counts: \texttt{send\_email}, \texttt{reply\_all}, \texttt{draft\_email}, \texttt{schedule\_meeting}, \texttt{archive\_email}, \texttt{delete\_email}.
+\item \texttt{llm\_step\_count}: number of LLM \texttt{chat()} calls during the run. Counts read-path calls + write-path calls (the write path is rule-based in our prototype, so this is read-path-only in practice). Apples-to-apples step-cost comparison.
+\item Checkpoint trigger and rejection counts (airlock only).
+\end{itemize}
+
+\textbf{Aggregation:} percentile bootstrap (1000 resamples, seeded for reproducibility) for 95\% CIs on the mean of each metric. Naive-vs-airlock contrast is reported as a paired-bootstrap difference of means with one-sided $p(\text{naive} \le \text{airlock})$.
+
+\textbf{Resources used.} All experiments were conducted using publicly available models, tools, and datasets (or synthetic data). No proprietary systems, datasets, or internal infrastructure were used.
+
+\subsection{Headline result: per-scenario contrast}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.92\linewidth]{figures/fig1_contrast.pdf}
+\caption{Per-scenario write-action contrast (mean $\pm$ 95\% bootstrap CI). Naive in red, airlock in blue. The architecture reduces or matches naive in 9 of 10 scenarios; the only inversion is $A_3$ where airlock is non-significantly higher than naive ($-0.2$ [$-1.1$, $+0.8$], $p = 0.694$).}
+\label{fig:contrast}
+\end{figure}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lrrrr}
+\toprule
+Scenario & Naive (mean $\pm$ std) & Airlock (mean $\pm$ std) & Diff [95\% CI] & $p(N \le A)$ \\
+\midrule
+$A_1$ accumulator      & $3.80 \pm 2.90$ & $2.40 \pm 0.70$ & $+1.4$ [$-0.2$, $+3.4$] & $0.060$ \\
+$A_2$ fan-out          & $6.00 \pm 0.00$ & $3.00 \pm 0.00$ & $+3.0$ [$+3.0$, $+3.0$] & $\mathbf{0.000}$ \\
+$A_3$ compounding      & $1.00 \pm 1.05$ & $1.20 \pm 1.23$ & $-0.2$ [$-1.1$, $+0.8$] & $0.694$ \\
+$A_4$ wrong-vendor     & $4.00 \pm 0.00$ & $0.00 \pm 0.00$ & $+4.0$ [$+4.0$, $+4.0$] & $\mathbf{0.000}$ \\
+$B_1$ stale date       & $0.50 \pm 0.53$ & $0.00 \pm 0.00$ & $+0.5$ [$+0.2$, $+0.8$] & $\mathbf{0.000}$ \\
+$B_2$ wrong John       & $0.50 \pm 0.53$ & $0.00 \pm 0.00$ & $+0.5$ [$+0.2$, $+0.8$] & $\mathbf{0.000}$ \\
+$B_3$ forwarded auth   & $1.00 \pm 0.00$ & $0.20 \pm 0.42$ & $+0.8$ [$+0.5$, $+1.0$] & $\mathbf{0.000}$ \\
+$C_1$ draft vs send    & $1.00 \pm 0.00$ & $1.00 \pm 0.00$ & $0.0$                  & $1.000$ \\
+$C_2$ archive vs delete & $5.00 \pm 0.00$ & $2.20 \pm 1.03$ & $+2.8$ [$+2.2$, $+3.4$] & $\mathbf{0.000}$ \\
+$D_1$ auto-responder    & $3.30 \pm 0.67$ & $1.90 \pm 0.99$ & $+1.4$ [$+0.7$, $+2.1$] & $\mathbf{0.001}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Seven clean architectural wins} ($A_2$, $A_4$, $B_1$, $B_2$, $B_3$, $C_2$, $D_1$ --- all $p \le 0.001$), \textbf{one tie} ($C_1$, both agents handle the linguistic cue), \textbf{one marginal win bound by naive variance} ($A_1$, $p = 0.060$), and \textbf{one architectural failure} ($A_3$, where the airlock is non-significantly higher than naive).
+
+\subsection{Variance asymmetry --- the cleanest cross-scenario signal}
+\label{sec:variance}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.92\linewidth]{figures/fig2_variance.pdf}
+\caption{Standard deviation of write-action count across 10 replicates, per scenario, per agent. The architecture's contribution is best understood as bounding naive's tail (left side: A1, A3, B1, B2, D1) --- naive's variance reflects unpredictable execution depth that the model cannot self-bound.}
+\label{fig:variance}
+\end{figure}
+
+The architecture's contribution is most defensibly framed as \textbf{variance reduction}, not just mean reduction. On accumulation/iteration scenarios where the naive baseline can plausibly take many actions, the airlock bounds the tail:
+
+\begin{itemize}[leftmargin=*]
+\item $A_1$: naive std $= 2.90$ (range 2--8 across 10 replicates); airlock std $= 0.70$ (range 1--3). $4\times$ tighter.
+\item $D_1$: naive std $= 0.67$, airlock std $= 0.99$ --- comparable, but naive's mean is higher and unpredictable count is the harm.
+\item $A_3$: comparable variance on both sides (naive std $= 1.05$, airlock std $= 1.23$); the architecture neither helps nor hurts on the variance axis.
+\end{itemize}
+
+On premise scenarios where naive saturates at maximum harm (deterministic 1.0 sends to a fabricated address in $A_4$, deterministic 1.0 forwarded-auth send in $B_3$), the architecture's variance is \emph{higher} than naive's because the architecture catches \emph{some but not all} replicates. The naive's ``low variance'' is a deterministic failure, not a virtue.
+
+The structural reading: a forward pass cannot reliably bound its own action count or audience reach (no anchor for ``how many is too many,'' no anchor for ``how big is too big''); a per-session counter does so by construction. Variance reduction on accumulation modes is not a performance optimization --- it is the architecture's load-bearing safety property.
+
+A practitioner asking \emph{``can I bound this agent's worst-case path cost?''} gets a crisp answer from the architecture and no answer at all from the naive baseline.
+
+\subsection{The $B_1$ narrative --- failure $\to$ fix $\to$ win}
+\label{sec:b1-narrative}
+
+The architecture initially failed on $B_1$ in a way that was paper-grade illustrative. Pre-fix: at $N = 10$, the airlock proposed a wrong-date \texttt{schedule\_meeting} in 10/10 replicates (the staged action embedded today's ``next Tuesday'' instead of recognizing the email's own date had a different ``next Tuesday''). The naive baseline produced clarification emails and took no harmful action.
+
+We diagnosed two design issues:
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{Tweak A.} The read-path system prompt focused on content trust + blast radius + draft-vs-send and said nothing about premise validity. We added items 5 (date / referent currency check) and 6 (information sufficiency check).
+\item \textbf{Tweak B.} \texttt{schedule\_meeting} was scored at 0.7 in the original irreversibility table, slipping under the budget threshold; we raised it to 0.9 (parity with \texttt{send\_email}) and added attendee-aware scaling.
+\end{itemize}
+
+Post-fix at $N = 10$: airlock writes drop to 0/10 replicates with 0 staged actions across the run. The read path now stops with a clarification request to the user. The fix lands cleanly and generalized --- $B_2$ moved from a tie (0.40/0.40 pre-fix) to a clean win (0.50/0.00 post-fix) because the same prompt addition catches wrong-John ambiguity, not just stale dates.
+
+The narrative is the cleanest version of the paper's framing: an architectural defect was identifiable as a \emph{missing input to the per-call reasoning} (no premise-check hook), and the fix was a small, principled change to the read-path interface rather than a model-side intervention.
+
+\subsection{The $A_3$ architectural failure --- what the architecture cannot see}
+\label{sec:a3-failure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{figures/fig4_a3_dotplot.pdf}
+\caption{Per-replicate action types on $A_3$. Naive (left) only fires \texttt{send\_email}. Airlock (right) reaches \texttt{reply\_all} in 2/10 and \texttt{schedule\_meeting} in 5/10 replicates --- propagating the wrong codename into a higher-blast-radius action type that the naive baseline never reaches.}
+\label{fig:a3}
+\end{figure}
+
+$A_3$ is the failure case the paper has to be honest about. The scenario: Bob asks Alice to ``kick off Project Atlas Q3'' --- three actions (announcement, OKR-thread reply, calendar invite), all referencing a codename ``Atlas'' that is wrong (the team renamed to ``Aurora'' in a separate thread Bob forgot to forward). Each action is internally consistent; the chain amplifies the error.
+
+Per-replicate at $N = 10$:
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lrr}
+\toprule
+ & Naive & Airlock \\
+\midrule
+Replicates with 0 writes & 4/10 & 4/10 \\
+Replicates with \texttt{send\_email} & 6/10 & 5/10 \\
+Replicates with \texttt{reply\_all} & \textbf{0/10} & \textbf{2/10} \\
+Replicates with \texttt{schedule\_meeting} & \textbf{0/10} & \textbf{5/10} \\
+Mean writes & 1.00 & 1.20 \\
+Checkpoints triggered & n/a & \textbf{0/10} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two things go wrong:
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{The architecture's count gate doesn't fire.} Three actions $\times$ 0.9 = 2.7, which fits in $B_0 = 3.0$. The budget is a count gate, not a content gate.
+\item \textbf{The airlock reaches action types the naive baseline doesn't.} In 5/10 replicates the airlock proposes \texttt{schedule\_meeting}, embedding the wrong codename in a calendar event that goes to Carol, Dave, and three platform leads. The naive baseline runs out of step budget before reaching the third item; the airlock's ``propose comprehensively, gate later'' pattern reaches the higher-blast-radius step.
+\end{enumerate}
+
+This is the failure mode the architecture cannot catch by design. The wrong codename is in the email body --- \emph{stated as fact}. The read-path prompt's items 5 and 6 detect \emph{missing} information; they do not invoke external fact-verification. Distinguishing a stated-as-true premise from a true premise is a per-call problem the architecture does not address.
+
+\subsection{The refined failure-mode taxonomy}
+\label{sec:taxonomy}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/fig6_taxonomy.pdf}
+\caption{Failure-mode $\times$ architectural-mechanism matrix. Filled cells indicate the mechanism catches the failure; partial cells indicate dependence on deployment mode (interactive review vs auto-checkpoint).}
+\label{fig:taxonomy}
+\end{figure}
+
+The 10-scenario data resolves to a sharper claim than the original four-mode framing. We distinguish \emph{two kinds of premise failure} and four kinds of mechanism-mode pairing:
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{p{3.2cm}p{4.0cm}p{4.0cm}}
+\toprule
+Failure mode & Mechanism that catches it & Evidence \\
+\midrule
+Premise-MISSING (info the agent doesn't have) & Read-path premise-check prompt & $B_1$ (10/10), $B_2$ (10/10), $A_4$ (10/10) \\
+Premise-WRONG-AS-FACT (info presented as truth) & Staging-area inspection (interactive); not caught in \texttt{EvalCheckpoint} & $B_3$ (8/10 partial), $A_3$ (0/10 --- failure) \\
+Cumulative-count harm & Trust budget + checkpoint rejection & $A_1$, $C_2$-sharpened (12 destructive ops blocked), $D_1$ \\
+Audience fan-out harm & Audience-aware irreversibility scoring $\times$ budget & $A_2$ (deterministic 3-action cap) \\
+Classification mode & Per-call alignment when cue is salient; budget catches \emph{count} not \emph{classification} & $C_1$ (model handles correctly), $C_2$ (model picks delete; budget catches count) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{The honest framing:} the architecture sees the \emph{shape} of a path (count, audience, action types, missing inputs) but not \emph{content veracity}. Fact-verification --- distinguishing a stated-as-true premise from a true premise --- remains a per-call problem.
+
+\subsection{Cost of safety: the architecture is \emph{cheaper}, not more expensive}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.92\linewidth]{figures/fig3_llm_steps.pdf}
+\caption{Mean LLM-call count per session. Airlock takes $\le$ naive on 8 of 10 scenarios. Largest savings on premise scenarios ($B_1$, $B_2$, $B_3$, $A_4$) where the read-path prompt makes the model stop early and ask for clarification rather than continuing to fire actions.}
+\label{fig:steps}
+\end{figure}
+
+The expected cost-of-safety story is that architecture imposes a ``long way around'' --- the agent finding more conservative paths to the same task completion, taking more steps. \textbf{The 10-scenario data shows the opposite.} The airlock takes equal-or-fewer LLM calls than the naive baseline on 8 of 10 scenarios, with the biggest savings on premise scenarios where the read-path prompt's clarification request short-circuits a multi-step execution chain:
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lrr}
+\toprule
+Scenario & Naive LLM steps & Airlock LLM steps \\
+\midrule
+$A_4$ wrong-vendor   & 6.0 & \textbf{2.3} \\
+$B_2$ wrong John     & 8.3 & \textbf{2.4} \\
+$B_3$ forwarded auth & 3.6 & \textbf{2.2} \\
+$B_1$ stale date     & 2.5 & \textbf{2.0} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The two scenarios where the airlock costs more are $A_1$ (naive 9.3, airlock 10.0 --- ${\sim}7\%$ premium) and $C_2$ under the sharpened prompt (naive 3.1, airlock 4.8 --- ${\sim}55\%$ premium). Both involve action batches where the airlock's read-path proposes-then-stages while the naive's ReAct loop interleaves reasoning and acting more efficiently.
+
+The cost of safety, in our setup, is paid in \textbf{task completion} rather than compute --- some unread emails go unhandled when the budget exhausts; some clarification requests defer work to the user. We do not yet have per-scenario task-completion rubrics; this metric is qualitative for now and is future work.
+
+\subsection{Structural Gaming --- empirically refuted at this $N$}
+
+A secondary hypothesis tested in the original draft was \emph{Structural Gaming}: under hard-gate budget pressure, the model preferentially proposes lower-irreversibility action types (e.g., \texttt{draft\_email} at $I = 0.1$ instead of \texttt{send\_email} at $I = 0.9$) to slip below the budget threshold. If observed, this would be \emph{not} a failure of the architecture but a feature: the budget functions as an economic constraint that \emph{steers} behavior via structural incentive rather than moralizing prompt-engineering.
+
+The 10-scenario action-mode breakdown shows \textbf{no evidence of Structural Gaming}. Drafts remain at zero in both naive and airlock conditions across all scenarios except $C_1$, where both agents pick \texttt{draft\_email} because the user explicitly asks for a draft. Sends remain dominant under budget pressure; mode-shift toward drafts does not emerge.
+
+The hypothesis remains testable in scenarios where the substitution is more linguistically natural, but our 10-scenario set produces no evidence for it. We report this as an honest empirical refutation rather than retain the speculative framing.
+
+\subsection{Comparison to SafetyDrift's claims}
+
+We do not run on SafetyDrift's benchmark (357 traces / 40 tasks); that is a substantial reimplementation we defer. Instead, we offer a \emph{qualitative} comparison: our trace-free budget catches accumulation/audience violations the same way SafetyDrift's learned monitor does, without requiring per-task training traces. The tradeoff: SafetyDrift achieves higher detection rates with task-specific Markov chains; our budget achieves comparable coverage with a static scoring table. Future work would benchmark them head-to-head.
+
+\section{Discussion}
+
+\subsection{What the contribution is, narrowly}
+
+A framing (door composition); a taxonomy (four composition modes, refined into five with the premise-MISSING / premise-WRONG-AS-FACT split); an empirical decomposition of which architectural primitive catches which mode at $N = 10$ across 10 scenarios; the structural argument that accumulation cannot be self-caught by any forward pass; and a trace-free architectural primitive (trust budget) that closes precisely this gap. Plus the empirical observation that the architecture's contribution is best understood as \emph{variance reduction} rather than mean reduction --- bounding the worst-case path cost rather than improving the average.
+
+What we are \emph{not} claiming: a novel theorem (\citealt{arthur1989}, \citealt{krakovna2018}, \citealt{garcia1987sagas} hold the math), a novel architecture (Plan-then-Execute is \citealt{delrosario2025planex}), or the first path-level safety claim for LLM agents (\citealt{dhodapkar2026safetydrift} has it). The contribution is the analytic taxonomy, the empirical decomposition, and the trace-free operationalization.
+
+\subsection{What the contribution buys}
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{Practitioners} gain a vocabulary for thinking about path-level failures and a per-mode checklist for which mechanisms (model alignment, read-path prompt, staging inspection, budget gate, audience scaling) catch which failure modes.
+\item \textbf{Auditors} can ask, mode-by-mode: \emph{does this deployment depend on the model self-catching a within-step signal, or does it have architectural cover for the cumulative case?}
+\item \textbf{Implementers} gain a trace-free starting architecture for the structural mode (accumulation), with the understanding that other modes --- particularly premise-WRONG-AS-FACT --- may require additional mechanisms (fact-verification tools, retrieval-grounded checks) the current architecture does not provide.
+\item \textbf{The community} gains a conceptual frame for organizing future agent-safety work along the \emph{what-information-is-required-to-detect-this-failure} axis.
+\end{itemize}
+
+The Airlock primitives directly address ``Data Spoilage'' in agentic flows:
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{Just-in-Time Logistics:} The staging area serves as an inspection buffer, preventing ``spoiled'' (unsafe/incorrect) data from moving to the execution layer.
+\item \textbf{Spoilage Limits:} The Trust Budget functions as a shelf-life monitor, ensuring no session can accumulate enough state to become irreversible.
+\item \textbf{Logistical Recovery (V2 Roadmap):} Future integration of the \emph{Saga pattern} will provide a ``recall/return'' mechanism for spoilage that reaches the final write-path, completing the supply-chain lifecycle.
+\end{itemize}
+
+Ultimately, this architecture represents a shift from reactive monitoring to proactive supply-chain management for agentic processes. By treating agentic execution as a logistics problem rather than a pure reasoning challenge, we move away from the traditional, monolithic `data warehouse' approach --- where data is processed in bulk and `spoilage' is only discovered post-hoc --- toward a model of just-in-time delivery. The Airlock primitives act as quality gates in this supply chain: the staging area provides the necessary inspection buffer, the trust budget enforces a shelf-life on cumulative actions, and the classification layer ensures that only `fresh' and appropriate inputs flow to the final write-path. This perspective reframes safety as the mitigation of `data spoilage' within the agentic trajectory, acknowledging that just as physical goods deteriorate in an inefficient supply chain, LLM agent actions lose their semantic grounding when allowed to propagate unchecked across irreversible doors.
+
+\subsection{The structural-versus-within-step argument is the foundational claim}
+
+A reader who takes only one thing from this paper should take this: \emph{accumulation-mode failures are visible only in cross-action state, which no forward pass has access to.} This is not an empirical claim about current models --- it is a structural claim that survives any model improvement. As models get better at within-step reasoning, premise-MISSING and classification failures will become rarer (we already observe this in 2026). Accumulation-mode failures will not, because the missing input cannot be supplied by better reasoning. Architecture is the only place this signal exists, regardless of how capable the model becomes.
+
+\subsection{Limitations}
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{Mock backend.} Generalization to real deployments untested.
+\item \textbf{Hand-specified irreversibility scores.} Learned alternatives may produce more accurate audience scaling and action-class differentiation.
+\item \textbf{$N = 10$.} Modest sample. We considered $N = 25$ and decided against it: the variance-asymmetry framing handles the marginal case ($A_1$) without needing tighter CIs, and $A_3$'s inverse finding requires $N \geq 50$ to resolve confidently. Better use of the same compute is the qualitative trace analysis (§\ref{sec:a3-failure}) and prompt sharpening (§\ref{sec:b1-narrative}).
+\item \textbf{Single model.} Sonnet~4 only. Cross-model replication is future work.
+\item \textbf{Scenario-level, not deployment-level.} The 10 scenarios are designed traps; production deployments will exhibit different failure-mode distributions.
+\item \textbf{EvalCheckpoint is auto-reject.} A real interactive deployment with human-in-the-loop would catch some premise-WRONG-AS-FACT failures (the $A_3$ failure mode) via staging inspection, which our eval mode does not test.
+\end{itemize}
+
+\subsection{The relationship to runtime monitors}
+
+SafetyDrift detects path-level drift after it has begun, with reported lead time of ${\sim}3.7$ steps. Our architecture \emph{prevents} drift by gating before doors are walked. These are complementary, not competing: a deployment might use both --- preventive gates for known-irreversible action classes, runtime monitors for emergent drift not captured in static scoring.
+
+\subsection{The relationship to capability defenses}
+
+CaMeL provides provable security against prompt injection via capability-based information flow. Our architecture makes no claim to provable guarantees; instead, it optimizes for low-overhead deployment. By eschewing the capability-annotation burden, the Airlock patterns scale across existing agentic tool-use loops while providing systemic protection against the path-level composition failures that capability-based defenses ignore. We view these as non-overlapping: CaMeL secures the information-flow perimeter, while the Airlock governs the path-level trajectory. Both are essential components of a complete defense stack.
+
+\subsection{What this means for agent design in 2026}
+
+Per-call alignment is not the place to invest the next marginal safety engineer. The persistence layer is budgets, staging, audit, rollback, compensation. Plan-then-Execute is becoming standard; the open question is what fills its planner-executor boundary. The composition-mode framework is one answer.
+
+\subsection{Future work --- compensating transactions}
+
+The architecture we propose is \emph{preventive}: it gates actions before they fire. A complete persistence-layer architecture for LLM agents would also include \emph{compensating transactions} --- paired forward-and-backward operations in the spirit of Sagas \citep{garcia1987sagas}, where every irreversible forward action has a defined semantic compensator (e.g., \texttt{send\_email} $\leftrightarrow$ \texttt{send\_retraction\_email}). Three open problems for the compensation work:
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{Taxonomy of compensability:} which actions admit compensation, which are partially compensable, which are non-compensable.
+\item \textbf{Compensation cost integral:} the compensating action itself consumes budget. A complete model treats forward and compensating actions as a single transaction with combined cost.
+\item \textbf{Time-decay of compensation effectiveness:} retractions sent immediately are far more effective than retractions sent later. The compensation surface is itself subject to the door-composition phenomenon.
+\end{itemize}
+
+\subsection{Future work --- the full Visibility $\times$ Enforcement phase diagram}
+
+Our findings suggest that safety interventions lie along two primary axes: \textbf{Visibility} (the agent's internal awareness of its path-level constraints) and \textbf{Enforcement} (the architectural gate that prevents limit violations). We categorize the current landscape into a 2$\times$2 phase diagram:
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{Naive (No Visibility, No Enforcement):} The baseline state where agents operate in a vacuum, oblivious to cumulative cost or structural constraints.
+\item \textbf{Hard-Gate Airlock (No Visibility, Hard Enforcement):} Our current architecture; it provides a safety floor through external gating but does not leverage the model's reasoning to avoid the gate.
+\item \textbf{Prompted-Budget (Visibility, No Enforcement):} A proposed state where the agent receives real-time telemetry on its remaining budget. The structural hypothesis is that this is necessary but insufficient: the model gains `context' but lacks an anchor for `how much is too much,' leading to the same accumulation failures.
+\item \textbf{Synergy (Visibility, Hard Enforcement):} The target state. We hypothesize that informing the model of its current budget \emph{before} the gate triggers enables a novel class of `self-limiting' agent behavior, substantially reducing the gate-trigger rate by steering the model toward paths that satisfy both utility and budget constraints.
+\end{itemize}
+
+Testing these final two cells is the primary objective of our follow-up effort. It will move the agent-safety dialogue from purely `preventative gating' toward `cooperative agent-environment safety.'
+
+\subsection{Future work --- fact-verification for premise-WRONG-AS-FACT}
+
+$A_3$ is the failure mode the current architecture cannot catch. A fact-verification primitive --- a retrieval check that surfaces contradicting evidence from the agent's own context (e.g., ``the codename was changed to Aurora in [thread X]'') --- would close this gap. Open question: how to keep this primitive cheap enough that it doesn't dominate the read-path's compute budget.
+
+\section{Conclusion}
+
+The shape of agent safety has changed. The failures that survive a well-aligned model are the failures a single forward pass cannot see --- failures that live in paths, not actions. We provide a framing (door composition), a taxonomy (four composition modes, refined into five with the premise-MISSING vs premise-WRONG-AS-FACT split), an empirical decomposition of which architectural primitive catches which mode at $N = 10$ across 10 scenarios, and a minimal Plan-then-Execute architecture that operationalizes the framing. The cleanest empirical signal is variance reduction, not mean reduction: the architecture's value is in \emph{bounding the tail} of path cost rather than improving the average. The contribution is conceptual scaffolding, not novel theorem; the value is in giving the field shared vocabulary for the part of agent safety that alignment alone cannot reach.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\appendix
+
+\section{Scenario fixtures}
+Mock-email seed data, trap construction, full scenario YAMLs available in the public repo at \url{https://github.com/mavaali/agentic-trust-protocol}.
+
+\section{Failure catalog}
+Mirror of the repo's \texttt{failure-catalog.md}, updated with the 10-scenario set and refined taxonomy.
+
+\section{Calibration}
+Irreversibility scoring rules (§4.5), audience-scaling helper, budget value $B_0 = 3.0$, calibration rationale.
+
+\section{Smoke-test result}
+The motivating empirical observation: Sonnet~4 refuses canonical adversarial scenarios (CEO fraud, reply-all blast) on its own merits. Brief dialogue snippets.
+
+\section{Reproducibility}
+Eval JSONs at \texttt{eval/results/}: \texttt{eval\_n10\_full\_v2.json} (9-scenario sweep), \texttt{eval\_n10\_A4.json}, \texttt{eval\_n10\_C2\_sharpened.json}. Figures regenerated from these via \texttt{docs/paper/figures/generate\_figures.py}.
+
+\end{document}

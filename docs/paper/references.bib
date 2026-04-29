@@ -1,0 +1,307 @@
+% References for "Two-Way Doors, One-Way Trajectories"
+% v1 arXiv draft, 2026-04-27.
+%
+% Author lists, arXiv IDs, and venues verified against arXiv / OpenReview /
+% NeurIPS / ICLR proceedings as of 2026-04-28. Mihir: spot-check before
+% arXiv submission (especially co-author lists for AgentDojo and Plan-then-
+% Execute, where I trimmed lists to first-author + et al. for compactness).
+
+% ============================================================
+% Path-irreversibility — economics
+% ============================================================
+
+@article{arthur1989,
+  author = {Arthur, W. Brian},
+  title = {Competing Technologies, Increasing Returns, and Lock-In by Historical Events},
+  journal = {The Economic Journal},
+  volume = {99},
+  number = {394},
+  pages = {116--131},
+  year = {1989},
+}
+
+@article{arrow1974,
+  author = {Arrow, Kenneth J. and Fisher, Anthony C.},
+  title = {Environmental Preservation, Uncertainty, and Irreversibility},
+  journal = {The Quarterly Journal of Economics},
+  volume = {88},
+  number = {2},
+  pages = {312--319},
+  year = {1974},
+}
+
+@article{henry1974,
+  author = {Henry, Claude},
+  title = {Investment Decisions Under Uncertainty: The Irreversibility Effect},
+  journal = {American Economic Review},
+  volume = {64},
+  number = {6},
+  pages = {1006--1012},
+  year = {1974},
+}
+
+@article{hanemann1989,
+  author = {Hanemann, W. Michael},
+  title = {Information and the Concept of Option Value},
+  journal = {Journal of Environmental Economics and Management},
+  volume = {16},
+  number = {1},
+  pages = {23--37},
+  year = {1989},
+}
+
+@article{david1985,
+  author = {David, Paul A.},
+  title = {Clio and the Economics of {QWERTY}},
+  journal = {American Economic Review},
+  volume = {75},
+  number = {2},
+  pages = {332--337},
+  year = {1985},
+}
+
+% ============================================================
+% Path-irreversibility — safe RL
+% ============================================================
+
+@misc{krakovna2018,
+  author = {Krakovna, Victoria and Orseau, Laurent and Kumar, Ramana and Martic, Miljan and Legg, Shane},
+  title = {Penalizing Side Effects Using Stepwise Relative Reachability},
+  year = {2018},
+  eprint = {1806.01186},
+  archivePrefix = {arXiv},
+  note = {Workshop on AI Safety, IJCAI 2018},
+}
+
+@inproceedings{eysenbach2018,
+  author = {Eysenbach, Benjamin and Gu, Shixiang and Ibarz, Julian and Levine, Sergey},
+  title = {Leave No Trace: Learning to Reset for Safe and Autonomous Reinforcement Learning},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year = {2018},
+  eprint = {1711.06782},
+  archivePrefix = {arXiv},
+}
+
+@inproceedings{grinsztajn2021,
+  author = {Grinsztajn, L{\'e}o and Ferret, Johan and Pietquin, Olivier and Preux, Philippe and Geist, Matthieu},
+  title = {There Is No Turning Back: A Self-Supervised Approach to Reversibility-Aware Reinforcement Learning},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year = {2021},
+}
+
+@inproceedings{turner2020,
+  author = {Turner, Alexander Matt and Hadfield-Menell, Dylan and Tadepalli, Prasad},
+  title = {Conservative Agency via Attainable Utility Preservation},
+  booktitle = {Proceedings of the AAAI/ACM Conference on AI, Ethics, and Society (AIES)},
+  year = {2020},
+  eprint = {1902.09725},
+  archivePrefix = {arXiv},
+  doi = {10.1145/3375627.3375851},
+}
+
+% ============================================================
+% Distributed systems / safety engineering
+% ============================================================
+
+@article{garcia1987sagas,
+  author = {Garcia-Molina, Hector and Salem, Kenneth},
+  title = {Sagas},
+  journal = {ACM SIGMOD Record},
+  volume = {16},
+  number = {3},
+  pages = {249--259},
+  year = {1987},
+}
+
+@book{leveson2011,
+  author = {Leveson, Nancy G.},
+  title = {Engineering a Safer World: Systems Thinking Applied to Safety},
+  publisher = {MIT Press},
+  year = {2011},
+  isbn = {9780262533690},
+  url = {https://mitpress.mit.edu/9780262533690/engineering-a-safer-world/},
+}
+
+@article{lynch1988,
+  author = {Lynch, Nancy A. and Merritt, Michael},
+  title = {Introduction to the Theory of Nested Transactions},
+  journal = {Theoretical Computer Science},
+  volume = {62},
+  number = {1--2},
+  pages = {123--185},
+  year = {1988},
+  doi = {10.1016/0304-3975(88)90123-9},
+}
+
+% ============================================================
+% LLM agents — path-level claim
+% ============================================================
+
+@misc{dhodapkar2026safetydrift,
+  author = {Dhodapkar, Aditya and Pishori, Farhaan},
+  title = {{SafetyDrift}: Predicting When {AI} Agents Cross the Line Before They Actually Do},
+  year = {2026},
+  eprint = {2603.27148},
+  archivePrefix = {arXiv},
+}
+
+% ============================================================
+% Architectural patterns
+% ============================================================
+
+@misc{delrosario2025planex,
+  author = {Del Rosario, Ron F. and Krawiecka, Klaudia and Schroeder de Witt, Christian},
+  title = {Architecting Resilient {LLM} Agents: A Guide to Secure Plan-then-Execute Implementations},
+  year = {2025},
+  eprint = {2509.08646},
+  archivePrefix = {arXiv},
+}
+
+@misc{young2010cqrs,
+  author = {Young, Greg},
+  title = {{CQRS} Documents},
+  year = {2010},
+  url = {https://cqrs.files.wordpress.com/2010/11/cqrs_documents.pdf},
+}
+
+@misc{camarques2024cqrs,
+  author = {Camarques, Matheus},
+  title = {Ask vs Act: {RAG}, Tool Use and {AI} Agents (Part 3 of {CQRS} for {AI} Agents)},
+  year = {2024},
+  howpublished = {DEV Community},
+  url = {https://dev.to/matheuscamarques/ask-vs-act-rag-tool-use-and-ai-agents-1ad2},
+}
+
+@misc{beurerkellner2025patterns,
+  author = {Beurer-Kellner, Luca and Buesser, Beat and Cre{\c{t}}u, Ana-Maria and Debenedetti, Edoardo and Dobos, Daniel and Fabian, Daniel and Fischer, Marc and Froelicher, David and Grosse, Kathrin and Naeff, Daniel and Ozoani, Ezinwanne and Paverd, Andrew and Tram{\`e}r, Florian and Volhejn, V{\'a}clav},
+  title = {Design Patterns for Securing {LLM} Agents against Prompt Injections},
+  year = {2025},
+  eprint = {2506.08837},
+  archivePrefix = {arXiv},
+}
+
+@misc{reversec2025patterns,
+  author = {{Reversec Labs}},
+  title = {Design Patterns to Secure {LLM} Agents In Action},
+  year = {2025},
+  url = {https://labs.reversec.com/posts/2025/08/design-patterns-to-secure-llm-agents-in-action},
+  note = {Industry walkthrough; companion code at \url{https://github.com/ReversecLabs/design-patterns-for-securing-llm-agents-code-samples}},
+}
+
+@misc{hua2024trustagent,
+  author = {Hua, Wenyue and Yang, Xianjun and Jin, Mingyu and Li, Zelong and Cheng, Wei and Tang, Ruixiang and Zhang, Yongfeng},
+  title = {{TrustAgent}: Towards Safe and Trustworthy {LLM}-based Agents through Agent Constitution},
+  year = {2024},
+  eprint = {2402.01586},
+  archivePrefix = {arXiv},
+}
+
+% ============================================================
+% Per-call defenses
+% ============================================================
+
+@inproceedings{ouyang2022rlhf,
+  author = {Ouyang, Long and Wu, Jeffrey and Jiang, Xu and Almeida, Diogo and Wainwright, Carroll and Mishkin, Pamela and Zhang, Chong and Agarwal, Sandhini and Slama, Katarina and Ray, Alex and Schulman, John and Hilton, Jacob and Kelton, Fraser and Miller, Luke and Simens, Maddie and Askell, Amanda and Welinder, Peter and Christiano, Paul F. and Leike, Jan and Lowe, Ryan},
+  title = {Training Language Models to Follow Instructions with Human Feedback},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year = {2022},
+}
+
+@misc{bai2022cai,
+  author = {Bai, Yuntao and Kadavath, Saurav and Kundu, Sandipan and Askell, Amanda and Kernion, Jackson and Jones, Andy and Chen, Anna and Goldie, Anna and Mirhoseini, Azalia and McKinnon, Cameron and Chen, Carol and Olsson, Catherine and Olah, Christopher and Hernandez, Danny and Drain, Dawn and Ganguli, Deep and Li, Dustin and Tran-Johnson, Eli and Perez, Ethan and Kerr, Jamie and Mueller, Jared and Ladish, Jeffrey and Landau, Joshua and Ndousse, Kamal and Lukosuite, Kamile and Lovitt, Liane and Sellitto, Michael and Elhage, Nelson and Schiefer, Nicholas and Mercado, Noemi and DasSarma, Nova and Lasenby, Robert and Larson, Robin and Ringer, Sam and Johnston, Scott and Kravec, Shauna and Showk, Sheer El and Fort, Stanislav and Lanham, Tamera and Telleen-Lawton, Timothy and Conerly, Tom and Henighan, Tom and Hume, Tristan and Bowman, Samuel R. and Hatfield-Dodds, Zac and Mann, Ben and Amodei, Dario and Joseph, Nicholas and McCandlish, Sam and Brown, Tom and Kaplan, Jared},
+  title = {Constitutional {AI}: Harmlessness from {AI} Feedback},
+  year = {2022},
+  eprint = {2212.08073},
+  archivePrefix = {arXiv},
+}
+
+@misc{wallace2024hierarchy,
+  author = {Wallace, Eric and Xiao, Kai and Leike, Reimar and Weng, Lilian and Heidecke, Johannes and Beutel, Alex},
+  title = {The Instruction Hierarchy: Training {LLMs} to Prioritize Privileged Instructions},
+  year = {2024},
+  eprint = {2404.13208},
+  archivePrefix = {arXiv},
+}
+
+@misc{hines2024spotlighting,
+  author = {Hines, Keegan and Lopez, Gary and Hall, Matthew and Zarfati, Federico and Zunger, Yonatan and Kiciman, Emre},
+  title = {Defending Against Indirect Prompt Injection Attacks With Spotlighting},
+  year = {2024},
+  eprint = {2403.14720},
+  archivePrefix = {arXiv},
+}
+
+@misc{greshake2023,
+  author = {Greshake, Kai and Abdelnabi, Sahar and Mishra, Shailesh and Endres, Christoph and Holz, Thorsten and Fritz, Mario},
+  title = {Not What You've Signed Up For: Compromising Real-World {LLM}-Integrated Applications with Indirect Prompt Injection},
+  year = {2023},
+  eprint = {2302.12173},
+  archivePrefix = {arXiv},
+}
+
+@inproceedings{debenedetti2024agentdojo,
+  author = {Debenedetti, Edoardo and Zhang, Jie and Balunovi{\'c}, Mislav and Beurer-Kellner, Luca and Fischer, Marc and Tram{\`e}r, Florian},
+  title = {{AgentDojo}: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for {LLM} Agents},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS) Datasets and Benchmarks Track},
+  year = {2024},
+  eprint = {2406.13352},
+  archivePrefix = {arXiv},
+}
+
+@misc{debenedetti2025camel,
+  author = {Debenedetti, Edoardo and Shumailov, Ilia and Fan, Tianqi and Hayes, Jamie and Carlini, Nicholas and Fabian, Daniel and Kern, Christoph and Shi, Chongyang and Terzis, Andreas and Tram{\`e}r, Florian},
+  title = {Defeating Prompt Injections by Design},
+  year = {2025},
+  eprint = {2503.18813},
+  archivePrefix = {arXiv},
+  note = {Introduces the {CaMeL} system for capability-based defense against prompt injection.},
+}
+
+% ============================================================
+% Agent benchmarks
+% ============================================================
+
+@inproceedings{yao2023react,
+  author = {Yao, Shunyu and Zhao, Jeffrey and Yu, Dian and Du, Nan and Shafran, Izhak and Narasimhan, Karthik and Cao, Yuan},
+  title = {{ReAct}: Synergizing Reasoning and Acting in Language Models},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year = {2023},
+  eprint = {2210.03629},
+  archivePrefix = {arXiv},
+}
+
+@misc{yao2024taubench,
+  author = {Yao, Shunyu and Shinn, Noah and Razavi, Pedram and Narasimhan, Karthik},
+  title = {$\tau$-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains},
+  year = {2024},
+  eprint = {2406.12045},
+  archivePrefix = {arXiv},
+}
+
+@inproceedings{ruan2024toolemu,
+  author = {Ruan, Yangjun and Dong, Honghua and Wang, Andrew and Pitis, Silviu and Zhou, Yongchao and Ba, Jimmy and Dubois, Yann and Maddison, Chris J. and Hashimoto, Tatsunori},
+  title = {Identifying the Risks of {LM} Agents with an {LM}-Emulated Sandbox},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year = {2024},
+  eprint = {2309.15817},
+  archivePrefix = {arXiv},
+  note = {ICLR 2024 Spotlight; introduces {ToolEmu}.},
+}
+
+@inproceedings{andriushchenko2025agentharm,
+  author = {Andriushchenko, Maksym and Souly, Alexandra and Dziemian, Mateusz and Duenas, Derek and Lin, Maxwell and Wang, Justin and Hendrycks, Dan and Zou, Andy and Kolter, Zico and Fredrikson, Matt and Winsor, Eric and Wynne, Jerome and Gal, Yarin and Davies, Xander},
+  title = {{AgentHarm}: A Benchmark for Measuring Harmfulness of {LLM} Agents},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year = {2025},
+  eprint = {2410.09024},
+  archivePrefix = {arXiv},
+}
+
+@inproceedings{liu2024agentbench,
+  author = {Liu, Xiao and Yu, Hao and Zhang, Hanchen and Xu, Yifan and Lei, Xuanyu and Lai, Hanyu and Gu, Yu and Ding, Hangliang and Men, Kaiwen and Yang, Kejuan and Zhang, Shudan and Deng, Xiang and Zeng, Aohan and Du, Zhengxiao and Zhang, Chenhui and Shen, Sheng and Zhang, Tianjun and Su, Yu and Sun, Huan and Huang, Minlie and Dong, Yuxiao and Tang, Jie},
+  title = {{AgentBench}: Evaluating {LLMs} as Agents},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year = {2024},
+  eprint = {2308.03688},
+  archivePrefix = {arXiv},
+}

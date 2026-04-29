@@ -6,37 +6,51 @@ This is the natural follow-up to the current preventive-side paper. The current 
 
 ---
 
+## Conceptual frame: completing the supply-chain lifecycle
+
+The current paper [Wagle 2026] introduces a **logistics framing** for path-level agent safety: agentic execution as just-in-time supply chain, where the staging area is an inspection buffer, the trust budget is a shelf-life monitor on cumulative state, and the irreversibility classifier ensures only "fresh" inputs flow to the write-path. Under this metaphor, the current paper's architecture handles **prevention of data spoilage** — gating actions before unsafe state propagates.
+
+The metaphor exposes what is missing: **logistical recovery.** Real supply chains have recall and return mechanisms for goods that have already shipped and turned out to be defective. LLM agent architectures have no analogue. Once an action fires — and the budget gate later proves to have under-counted the cost, or a downstream consequence reveals the action as a mistake — the current architecture is silent.
+
+This paper completes the supply-chain lifecycle by adding the recall/return primitive. The Saga pattern (Garcia-Molina & Salem 1987) is the formal antecedent: every forward action paired with a *compensating action* whose role is semantic, not state-restoring. *"You cannot un-send an email; you can mail an apology."* The compensation literature is mature for distributed databases and has been ported to microservices (Richardson 2018). It has *not* been seriously developed for LLM agents.
+
+This second paper closes that gap.
+
+---
+
 ## Positioning relative to the current paper
 
 The current paper's architecture is **preventive**: trust budget + staging area + irreversibility classifier gate actions before they fire. This addresses the structural-input-availability gap on the *forward* path. It does not address what happens once an action *has* fired and the cumulative budget is later found to have been crossed — by underestimation, parallelism, or downstream consequence.
 
-The Sagas literature (Garcia-Molina & Salem 1987) provides the formal antecedent: every forward action paired with a *compensating action* whose role is semantic, not state-restoring. *"You cannot un-send an email; you can mail an apology."* The compensation literature is mature for distributed databases and has been ported to microservices (Richardson 2018). It has *not* been seriously developed for LLM agents.
+The current paper labels this scope explicitly (§4.7, §7.8) and forecasts the present paper as the natural completion: *"a complete persistence-layer architecture for LLM agents would also include compensating-transaction primitives."* The supply-chain frame in §7.2 of the current paper makes the gap concrete — recall/return is what's missing — and this paper fills it.
 
-This second paper closes that gap.
+The CaMeL parallel from §7.6 is worth noting: CaMeL secures the information-flow *perimeter*; the Airlock governs the path-level *trajectory*; this paper's compensation layer governs *post-action recovery*. The three primitives are non-overlapping and combinable in a complete defense stack.
 
 ## What this paper claims
 
-1. A complete path-level safety architecture for LLM agents requires both preventive and compensating primitives.
-2. Compensation in the LLM-agent setting is *itself* subject to door composition: the time-decay of compensation effectiveness, and the compensability of compensating actions, must be modeled.
+1. A complete path-level safety architecture for LLM agents requires both preventive and compensating primitives. The supply-chain metaphor introduced in [Wagle 2026] makes this concrete: prevention is shelf-life monitoring; compensation is recall/return.
+2. Compensation in the LLM-agent setting is *itself* subject to door composition: the time-decay of compensation effectiveness, and the compensability of compensating actions, must be modeled. This is the natural extension of the door-composition framing — compensating actions are themselves doors that close over time.
 3. A taxonomy of compensability (compensable / partially compensable / non-compensable) plus a compensation-cost integral give a tractable architectural primitive that practitioners can deploy.
 4. Empirically, an LLM agent equipped with compensation primitives recovers from budget-overrun scenarios at higher rates than one without, *and* the cost of compensation can be quantified.
+5. **The cooperative-safety extension.** The current paper's §7.9 phase diagram (Visibility × Enforcement) hypothesizes "cooperative agent-environment safety" — an agent that sees its budget and self-limits. The compensation primitive opens a third axis: an agent that sees its *compensation cost* in advance can reason about whether a planned action is worth its forward + recovery cost together. We sketch this as future work but do not test it in this paper.
 
 ## Outline (provisional, ~9000 words)
 
 ### 1. Introduction
-- The preventive surface (recap of current paper, brief).
-- The post-action surface — actions that fire despite preventive gates.
+- The preventive surface (recap of current paper, brief). Lead with the supply-chain framing: prevention as shelf-life monitoring at the staging area.
+- The post-action surface — actions that fire despite preventive gates. The recall/return gap.
 - The Saga antecedent: 30 years of compositional-safety practice in distributed systems, never applied to LLM agents.
 - This paper's claim: compensation is the missing half.
 
 ### 2. Background and Related Work
-- The current paper [Wagle 2026 — preprint] as the immediate predecessor.
+- The current paper [Wagle 2026 — preprint] as the immediate predecessor. The supply-chain frame, the four-mode taxonomy, the variance-asymmetry signal, and the explicit out-of-scope flag for compensation (§4.7, §7.8 of [Wagle 2026]).
 - Garcia-Molina & Salem 1987 (Sagas) — the foundational compositional-reversibility result.
-- Lynch & Merritt 1986; Weikum & Vossen 2001 — formal nested-transactions theory.
+- Lynch & Merritt 1988 (TCS journal version; original tech report 1986); Weikum & Vossen 2001 — formal nested-transactions theory.
 - Richardson 2018 — modern microservices Saga practice.
 - Compensating transactions in agent literature: largely absent. (We position this as the gap we're filling.)
 - Parallel: SafetyDrift's reversibility dimension (Dhodapkar & Pishori 2026) — they detect drift but do not address recovery.
 - Adjacent: the rollback / undo literature in HCI and version-controlled systems (cite a representative sample).
+- Adjacent: A3-style premise-WRONG-AS-FACT failures from [Wagle 2026] — the architecture's known failure mode is a natural compensation target. When the wrong codename propagates across three actions, retraction-and-correction is the recovery primitive.
 
 ### 3. Compensation as a Door-Composition Phenomenon
 This is the conceptual core. Compensation is itself subject to path-irreversibility composition:
@@ -65,12 +79,12 @@ Three primary categories, each with subcases:
 Each entry in the taxonomy has structured metadata: time-decay constant, compensation cost (in irreversibility units), and dependency on world state (e.g., "has any recipient replied?").
 
 ### 5. Architecture: Sagas for Agents
-- A `compensator` registry mapping each forward action type to one or more compensating actions plus their cost.
-- A `compensation log` that records executed forward actions with their irreversibility cost and whether they have been compensated.
+- A `compensator` registry mapping each forward action type to one or more compensating actions plus their cost. (The recall mechanism in supply-chain terms.)
+- A `compensation log` that records executed forward actions with their irreversibility cost and whether they have been compensated. (The shipment manifest.)
 - A `compensate` operation invocable when budget is found to have been crossed: walks the log in reverse-LIFO order, executing compensators where applicable, accumulating compensation cost into an extended budget.
-- Integration with the preventive architecture: compensation is the recovery primitive when the preventive gate fails or the irreversibility classifier underestimates.
+- Integration with the preventive architecture: compensation is the recovery primitive when the preventive gate fails or the irreversibility classifier underestimates. The two layers form a complete supply-chain lifecycle: prevention upstream of the write-path, recovery downstream of it.
 
-Diagram: Plan-then-Execute architecture extended with a Compensation channel, parallel to the Read path and Write path.
+Diagram: Plan-then-Execute architecture extended with a Compensation channel, parallel to the Read path and Write path. The figure should mirror Figure 5 of [Wagle 2026] with the Compensation layer added below the email backend.
 
 ### 6. Implementation
 - Email backend extended with mock compensators (retraction email, calendar cancellation, etc.).
@@ -95,9 +109,9 @@ Diagram: Plan-then-Execute architecture extended with a Compensation channel, pa
 - The taxonomy will need extension as new agent-tool surfaces emerge (e.g., physical-world actuators have very different compensability profiles than communication actions).
 
 ### 9. Conclusion
-- The persistence-layer story for LLM agent safety has two halves: prevention and compensation.
+- The supply-chain lifecycle for LLM agents has two halves: shelf-life monitoring upstream of the write-path (prevention) and recall/return downstream of it (compensation).
 - The current paper [Wagle 2026] addresses prevention; this paper addresses compensation.
-- Together they form a deployable architectural template. Future work: hybrid systems combining preventive gates, runtime monitors (SafetyDrift), capability defenses (CaMeL), and compensation primitives.
+- Together they form a deployable architectural template. The complete defense stack also includes orthogonal primitives: runtime monitors (SafetyDrift), capability defenses (CaMeL — perimeter), and the trajectory-level Airlock primitives. None of these substitute for any of the others.
 
 ### Appendices
 - A: Compensation taxonomy in full (likely 30-50 entries spanning common agent action types).
@@ -120,6 +134,7 @@ Diagram: Plan-then-Execute architecture extended with a Compensation channel, pa
 2. *"How is this different from runtime monitors with auto-rollback?"* — runtime monitors detect; compensation acts. We argue the pairing is necessary, not redundant.
 3. *"Compensation effectiveness is subjective; your numbers are made up."* — partly true. We honest-up about this in Section 8 and treat the compensation-cost integral as a *design tool* rather than a ground-truth measurement.
 4. *"Why not just use database-style transactions if you want rollback?"* — because the agent's actions affect the world (recipients' attention, social capital) which is not transactional. Saga's whole point is precisely this: semantic compensation, not state restoration.
+5. *"Isn't the supply-chain metaphor overextended?"* — the metaphor is load-bearing in the conceptual frame but not in the math. Reviewers who object to the metaphor can read the paper as a Saga-pattern application without losing technical content. The supply-chain frame is a way of telling the story, not a hidden assumption.
 
 ## Timeline
 
