@@ -21,3 +21,10 @@ dist/
 *.fls
 *.log
 *.out
+
+# Local agent/editor config
+.claude/
+
+# Generated paper artifacts (regenerable)
+docs/paper/arxiv_submission.tar.gz
+docs/paper/bibsleuth_report*

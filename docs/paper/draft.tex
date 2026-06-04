@@ -34,11 +34,10 @@
 \title{\textbf{Two-Way Doors, One-Way Trajectories:}\\
 \large A Compositional Account of LLM Agent Safety}
 
-\author{Mihir Wagle\thanks{This work was conducted in the author's personal capacity and reflects the author's views only. It does not draw on or disclose any confidential or proprietary information, and does not represent the views of the author's employer.}\\
-Microsoft\\
-\texttt{mihir.wagle@gmail.com}}
+\author{Mihir Wagle\thanks{Correspondence: \texttt{mihir.wagle@gmail.com}. This work was conducted in the author's personal capacity and reflects the author's views only. It does not draw on or disclose any confidential or proprietary information, and does not represent the views of the author's employer.}\\
+Microsoft}
 
-\date{v1 arXiv draft --- April 2026}
+\date{v1 arXiv draft --- June 2026}
 
 \begin{document}
 \maketitle
@@ -77,7 +76,7 @@ A series of two-way doors composes into a one-way door whenever the world moves 
 
 \subsection{What this paper does \emph{not} claim}
 
-We do not claim the underlying mathematics as novel. \citet{arthur1989} proves the path-dependence theorem in economics; \citet{krakovna2018} formalize stepwise relative reachability for safe RL; \citet{garcia1987sagas} give compositional reversal for distributed systems; \citet{dhodapkar2026safetydrift} make the path-level empirical claim for LLM agents specifically; \citet{delrosario2025planex} propose the Plan-then-Execute architectural pattern. We claim the \emph{framing}, the \emph{taxonomy}, and the \emph{minimal trace-free operationalization} for LLM agents specifically. We do not run a head-to-head comparison against SafetyDrift's learned monitor; that benchmark is a separate reimplementation effort.
+We do not claim the underlying mathematics as novel. \citet{arthur1989} gives a formal stochastic model (a random walk with absorbing barriers) in which locally-reversible adoption steps lock in; \citet{krakovna2018} formalize stepwise relative reachability for safe RL; \citet{garcia1987sagas} give compositional reversal for distributed systems; \citet{dhodapkar2026safetydrift} make the path-level empirical claim for LLM agents specifically; \citet{delrosario2025planex} propose the Plan-then-Execute architectural pattern. We claim the \emph{framing}, the \emph{taxonomy}, and the \emph{minimal trace-free operationalization} for LLM agents specifically. We do not run a head-to-head comparison against SafetyDrift's learned monitor; that benchmark is a separate reimplementation effort.
 
 \section{Related Work}
 
@@ -87,7 +86,7 @@ The paper's contribution is the framing and the empirical decomposition. We posi
 
 \textbf{Economics.} \citet{arrow1974} and \citet{henry1974} on the irreversibility effect; \citet{hanemann1989} on quasi-option value; \citet{arthur1989} on lock-in by historical events; \citet{david1985} on path dependence. The decision-theoretic content of door composition is well-established in this literature.
 
-\textbf{Safe RL.} \citet{krakovna2018} on stepwise relative reachability --- a path-integral measure of irreversibility. \citet{eysenbach2018} on Leave No Trace. \citet{grinsztajn2021} on learned reversibility estimators. \citet{turner2020} on Attainable Utility Preservation.
+\textbf{Safe RL.} \citet{krakovna2018} on stepwise relative reachability --- a state-reachability measure of side-effect irreversibility. \citet{eysenbach2018} on Leave No Trace. \citet{grinsztajn2021} on learned reversibility estimators. \citet{turner2020} on Attainable Utility Preservation.
 
 \textbf{Distributed systems / safety engineering.} \citet{garcia1987sagas} on Sagas. \citet{leveson2011} on STAMP/STPA. \citet{lynch1988} on nested transactions.
 
@@ -99,7 +98,7 @@ The paper's contribution is the framing and the empirical decomposition. We posi
 
 \subsection{Per-call defenses and their limits}
 
-RLHF \citep{ouyang2022rlhf}; Constitutional AI \citep{bai2022cai}; Instruction Hierarchy \citep{wallace2024hierarchy}; Spotlighting \citep{hines2024spotlighting}. For prompt injection: \citet{greshake2023}; AgentDojo \citep{debenedetti2024agentdojo}; CaMeL \citep{debenedetti2025camel} for capability-based provable defense. Per-call defenses are necessary but structurally incomplete for path-level safety, by the visibility-asymmetry argument we make in §3.
+RLHF \citep{ouyang2022rlhf}; Constitutional AI \citep{bai2022cai}; Instruction Hierarchy \citep{wallace2024hierarchy}; Spotlighting \citep{hines2024spotlighting}. For prompt injection: \citet{greshake2023}; AgentDojo \citep{debenedetti2024agentdojo}; CaMeL \citep{debenedetti2025camel} for capability-based defense, provable within its stated threat model. Per-call defenses are necessary but structurally incomplete for path-level safety, by the visibility-asymmetry argument we make in §3.
 
 \subsection{Agent benchmarks}
 
@@ -209,7 +208,7 @@ Plus defense-in-depth for adversarial inputs that survive model alignment: the b
 
 \subsection{What this architecture does \emph{not} do (scope)}
 
-The architecture is \textbf{preventive}: it gates actions before they fire. It does not address what to do once an irreversible action \emph{has} fired. The classical antecedent for that case is the \textbf{Saga pattern} \citep{garcia1987sagas}: every forward action is paired with a \emph{compensating action} (e.g., \texttt{send\_email} $\leftrightarrow$ \texttt{send\_retraction}). Compensation is \emph{semantic}, not state-restoring (you cannot un-inform a recipient, but you can mail an apology), and its effectiveness \emph{decays with time}. We treat compensation as out of scope here for clarity; a complete persistence-layer architecture for LLM agents would also include compensating-transaction primitives, sketched in our companion outline.
+The architecture is \textbf{preventive}: it gates actions before they fire. It does not address what to do once an irreversible action \emph{has} fired. The classical antecedent for that case is the \textbf{Saga pattern} \citep{garcia1987sagas}: every forward action is paired with a \emph{compensating action} (e.g., \texttt{send\_email} $\leftrightarrow$ \texttt{send\_retraction}). Compensation is \emph{semantic}, not state-restoring (you cannot un-inform a recipient, but you can mail an apology); in the agent setting, a compensator's effectiveness also \emph{decays with elapsed time}. We treat compensation as out of scope here for clarity; a complete persistence-layer architecture for LLM agents would also include compensating-transaction primitives, sketched in our companion outline.
 
 \section{Implementation}
 
@@ -503,7 +502,7 @@ SafetyDrift detects path-level drift after it has begun, with reported lead time
 
 \subsection{The relationship to capability defenses}
 
-CaMeL provides provable security against prompt injection via capability-based information flow. Our architecture makes no claim to provable guarantees; instead, it optimizes for low-overhead deployment. By eschewing the capability-annotation burden, the Airlock patterns scale across existing agentic tool-use loops while providing systemic protection against the path-level composition failures that capability-based defenses ignore. We view these as non-overlapping: CaMeL secures the information-flow perimeter, while the Airlock governs the path-level trajectory. Both are essential components of a complete defense stack.
+CaMeL provides security against prompt injection via capability-based information flow, provable within its stated threat model. Our architecture makes no claim to provable guarantees; instead, it optimizes for low-overhead deployment. By eschewing the capability-annotation burden, the Airlock patterns scale across existing agentic tool-use loops while providing systemic protection against the path-level composition failures that capability-based defenses ignore. We view these as non-overlapping: CaMeL secures the information-flow perimeter, while the Airlock governs the path-level trajectory. Both are essential components of a complete defense stack.
 
 \subsection{What this means for agent design in 2026}
 

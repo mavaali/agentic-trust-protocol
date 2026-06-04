@@ -1,10 +1,21 @@
 % References for "Two-Way Doors, One-Way Trajectories"
 % v1 arXiv draft, 2026-04-27.
 %
-% Author lists, arXiv IDs, and venues verified against arXiv / OpenReview /
-% NeurIPS / ICLR proceedings as of 2026-04-28. Mihir: spot-check before
-% arXiv submission (especially co-author lists for AgentDojo and Plan-then-
-% Execute, where I trimmed lists to first-author + et al. for compactness).
+% Full reference validation pass 2026-06-03: every entry checked against
+% live arXiv abstract pages, publisher pages, DBLP, and DOI resolvers.
+% Fixes applied this pass:
+%   - lynch1988: DOI corrected (old 10.1016/0304-3975(88)90123-9 did not
+%     resolve; real DOI is 10.1016/0304-3975(86)90014-9).
+%   - grinsztajn2021: first author corrected Leo -> Nathan Grinsztajn
+%     (misattribution); title preposition "to" -> "for"; arXiv:2106.04480 added.
+%   - ouyang2022rlhf: arXiv:2203.02155 added.
+%   - Locators added so every entry is checkable under plainnat: canonical
+%     DOIs for the journal articles (arthur, arrow, hanemann, garcia); arXiv
+%     DOIs (10.48550/arXiv.*) for inproceedings preprints; arXiv abs URLs for
+%     misc preprints (plainnat renders doi for article/inproceedings but only
+%     url for misc). Rejected two proceedings.com DOIs (ouyang, agentdojo).
+% Trimmed author lists (first-author + et al.) are intentional for compactness;
+% first authors verified correct in all cases.
 
 % ============================================================
 % Path-irreversibility — economics
@@ -18,6 +29,7 @@
   number = {394},
   pages = {116--131},
   year = {1989},
+  doi = {10.2307/2234208},
 }
 
 @article{arrow1974,
@@ -28,6 +40,7 @@
   number = {2},
   pages = {312--319},
   year = {1974},
+  doi = {10.2307/1883074},
 }
 
 @article{henry1974,
@@ -48,6 +61,7 @@
   number = {1},
   pages = {23--37},
   year = {1989},
+  doi = {10.1016/0095-0696(89)90042-9},
 }
 
 @article{david1985,
@@ -70,6 +84,7 @@
   year = {2018},
   eprint = {1806.01186},
   archivePrefix = {arXiv},
+  url = {https://arxiv.org/abs/1806.01186},
   note = {Workshop on AI Safety, IJCAI 2018},
 }
 
@@ -80,13 +95,17 @@
   year = {2018},
   eprint = {1711.06782},
   archivePrefix = {arXiv},
+  doi = {10.48550/arXiv.1711.06782},
 }
 
 @inproceedings{grinsztajn2021,
-  author = {Grinsztajn, L{\'e}o and Ferret, Johan and Pietquin, Olivier and Preux, Philippe and Geist, Matthieu},
-  title = {There Is No Turning Back: A Self-Supervised Approach to Reversibility-Aware Reinforcement Learning},
+  author = {Grinsztajn, Nathan and Ferret, Johan and Pietquin, Olivier and Preux, Philippe and Geist, Matthieu},
+  title = {There Is No Turning Back: A Self-Supervised Approach for Reversibility-Aware Reinforcement Learning},
   booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
   year = {2021},
+  eprint = {2106.04480},
+  archivePrefix = {arXiv},
+  doi = {10.48550/arXiv.2106.04480},
 }
 
 @inproceedings{turner2020,
@@ -111,6 +130,7 @@
   number = {3},
   pages = {249--259},
   year = {1987},
+  doi = {10.1145/38714.38742},
 }
 
 @book{leveson2011,
@@ -130,7 +150,7 @@
   number = {1--2},
   pages = {123--185},
   year = {1988},
-  doi = {10.1016/0304-3975(88)90123-9},
+  doi = {10.1016/0304-3975(86)90014-9},
 }
 
 % ============================================================
@@ -143,6 +163,7 @@
   year = {2026},
   eprint = {2603.27148},
   archivePrefix = {arXiv},
+  url = {https://arxiv.org/abs/2603.27148},
 }
 
 % ============================================================
@@ -155,6 +176,7 @@
   year = {2025},
   eprint = {2509.08646},
   archivePrefix = {arXiv},
+  url = {https://arxiv.org/abs/2509.08646},
 }
 
 @misc{young2010cqrs,
@@ -178,6 +200,7 @@
   year = {2025},
   eprint = {2506.08837},
   archivePrefix = {arXiv},
+  url = {https://arxiv.org/abs/2506.08837},
 }
 
 @misc{reversec2025patterns,
@@ -194,6 +217,7 @@
   year = {2024},
   eprint = {2402.01586},
   archivePrefix = {arXiv},
+  url = {https://arxiv.org/abs/2402.01586},
 }
 
 % ============================================================
@@ -205,6 +229,9 @@
   title = {Training Language Models to Follow Instructions with Human Feedback},
   booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
   year = {2022},
+  eprint = {2203.02155},
+  archivePrefix = {arXiv},
+  doi = {10.48550/arXiv.2203.02155},
 }
 
 @misc{bai2022cai,
@@ -213,6 +240,7 @@
   year = {2022},
   eprint = {2212.08073},
   archivePrefix = {arXiv},
+  url = {https://arxiv.org/abs/2212.08073},
 }
 
 @misc{wallace2024hierarchy,
@@ -221,6 +249,7 @@
   year = {2024},
   eprint = {2404.13208},
   archivePrefix = {arXiv},
+  url = {https://arxiv.org/abs/2404.13208},
 }
 
 @misc{hines2024spotlighting,
@@ -229,6 +258,7 @@
   year = {2024},
   eprint = {2403.14720},
   archivePrefix = {arXiv},
+  url = {https://arxiv.org/abs/2403.14720},
 }
 
 @misc{greshake2023,
@@ -237,6 +267,7 @@
   year = {2023},
   eprint = {2302.12173},
   archivePrefix = {arXiv},
+  url = {https://arxiv.org/abs/2302.12173},
 }
 
 @inproceedings{debenedetti2024agentdojo,
@@ -246,6 +277,7 @@
   year = {2024},
   eprint = {2406.13352},
   archivePrefix = {arXiv},
+  doi = {10.48550/arXiv.2406.13352},
 }
 
 @misc{debenedetti2025camel,
@@ -254,6 +286,7 @@
   year = {2025},
   eprint = {2503.18813},
   archivePrefix = {arXiv},
+  url = {https://arxiv.org/abs/2503.18813},
   note = {Introduces the {CaMeL} system for capability-based defense against prompt injection.},
 }
 
@@ -268,6 +301,7 @@
   year = {2023},
   eprint = {2210.03629},
   archivePrefix = {arXiv},
+  doi = {10.48550/arXiv.2210.03629},
 }
 
 @misc{yao2024taubench,
@@ -276,6 +310,7 @@
   year = {2024},
   eprint = {2406.12045},
   archivePrefix = {arXiv},
+  url = {https://arxiv.org/abs/2406.12045},
 }
 
 @inproceedings{ruan2024toolemu,
@@ -285,6 +320,7 @@
   year = {2024},
   eprint = {2309.15817},
   archivePrefix = {arXiv},
+  doi = {10.48550/arXiv.2309.15817},
   note = {ICLR 2024 Spotlight; introduces {ToolEmu}.},
 }
 
@@ -295,6 +331,7 @@
   year = {2025},
   eprint = {2410.09024},
   archivePrefix = {arXiv},
+  doi = {10.48550/arXiv.2410.09024},
 }
 
 @inproceedings{liu2024agentbench,
@@ -304,4 +341,5 @@
   year = {2024},
   eprint = {2308.03688},
   archivePrefix = {arXiv},
+  doi = {10.48550/arXiv.2308.03688},
 }
