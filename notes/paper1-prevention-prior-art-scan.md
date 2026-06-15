@@ -10,7 +10,7 @@
 
 ## 1. Verdict — **SAFE but DENTED**
 
-[DATA] No published or preprint work (2024–June 2026) independently proposes a **consumable, cumulative, path-level irreversibility/trust budget that GATES LLM-agent actions before they fire.** That specific mechanism — Paper 1's core preventive contribution — appears genuinely open. Not duplicated.
+[DATA] No published or preprint **paper** (2024–June 2026) independently proposes a **consumable, cumulative, path-level irreversibility/trust budget that GATES LLM-agent actions before they fire.** That specific *published* formulation — Paper 1's core preventive contribution — appears open. **Caveat (see §6):** in *deployed* code the picture is weaker — Databricks Omnigent (June 2026) ships an accumulate-then-gate policy layer with a non-fungible path-monotone risk *level*, so the bare accumulate-and-gate *mechanism* is not unprecedented in shipped systems even though no paper formalizes the irreversibility-budget version. The novelty is real but narrower than "mechanism is open" implies.
 
 The "dent" is **thesis overlap, not mechanism overlap**, and it comes from a paper Paper 1 *already* treats as its closest prior art: **SafetyDrift**. So the situation is no worse than the lit-map already assumed — and the most alarming new suspect turned out to be a fetch artifact.
 
@@ -52,9 +52,13 @@ These three are the best cites for "the field has recognized this gap but not fi
 
 ---
 
-## 6. Deployed-harness prior art — none found [DATA, medium confidence]
+## 6. Deployed-harness prior art — Omnigent IS the counterexample [DATA — corrects the scan]
 
-No verified evidence any shipped harness (Omnigent, AutoGen, LangGraph, Semantic Kernel, vendor SDKs) ships a cumulative path-level irreversibility/risk budget that gates. All observed gating is per-call (CaMeL, Edictum, SafeGate) or detect-only (SafetyDrift, TRACES). **Medium confidence** — the corpus was paper-centric; a targeted harness-docs sweep was not exhaustive (Omnigent's `risk_score`/budgets accumulate but do not *gate-on-a-path-budget* per the earlier Phase 0 review).
+**The scan's "none found" is wrong; this repo's own Phase 0 review refutes it.** The deep-research corpus was paper-centric (it fetched the Omnigent blog but didn't connect it). Per [notes/omnigent-policy-review.md](omnigent-policy-review.md): **Databricks Omnigent (June 2026) ships an accumulate-then-gate policy layer** — *"an accumulate-a-non-fungible-path-score-then-gate primitive … ships as a documented builtin (`risk_score_policy`)"* — a non-fungible, path-monotone risk *level* that gates the pending action with `ALLOW`/`ASK`/`DENY` **before it fires**, plus fungible accumulating budgets (`cost_budget`, `tool_call_count`) and a `session_state` accumulator seam for custom path-level budgets. So a deployed harness **does** do preventive accumulate-and-gate. (The other vendor harnesses — AutoGen, LangGraph, Semantic Kernel — remain not-found, medium confidence.)
+
+**What Omnigent does NOT ship as a builtin:** specifically an *accumulating non-fungible irreversibility-cost budget* (Σ per-action irreversibility cost). `risk_score` is an ordinal level, not a summed cost; the cost/count budgets are fungible. The seam to build the non-fungible version as a custom `FunctionPolicy` exists — and per the Phase 0 **do-not-claim list**, Paper 1 must NOT assert Omnigent *"can't express a path-level irreversibility budget"*; that is code-refuted.
+
+**Implication for Paper 1 (timing).** Omnigent shipped ~the same week Paper 1 finalized (both June 2026) → **concurrent deployed work, not strictly prior art**; recency legitimately explains the missing cite. But two things follow: (1) **drop any "no deployed system does this" framing** — false, and the team knows it from Phase 0; (2) a one-line **concurrent-work acknowledgment is the honest, cheap move** (Databricks is a major vendor; reviewers will know Omnigent; the team has a deep review on file). The defensible delta vs Omnigent is the **conceptual frame (door composition), the four-mode taxonomy, trace-free operationalization, the empirical mode-decomposition, and the specific accumulating-irreversibility-budget formulation** — NOT the bare accumulate-and-gate mechanism, which Omnigent makes table stakes. This mirrors the governance plan's Paper 2 line ("accumulation is becoming table stakes; compensation is the frontier") — the same logic dents Paper 1's *mechanism* claim and pushes its novelty onto frame + taxonomy + empirics.
 
 ---
 
