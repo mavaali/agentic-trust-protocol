@@ -4,6 +4,23 @@
 **Supersedes:** the original "loud-track" Omnigent governance evaluation plan (Phase 0 → Phase 2/3 external artifact).
 **Gate input:** [notes/omnigent-policy-review.md](omnigent-policy-review.md) (Phase 0 falsification review, target `omnigent-ai/omnigent @ abd110c`).
 
+## 0. 2026-06-14 update — cross-session material retargeted to Paper 1 v2
+
+v1 is now submitted to arXiv, so the natural home for the cross-session argument is a v2
+version bump of Paper 1, not a Paper 2 sidebar. Accordingly, the cross-session / spawn-tree
+accumulation residual (§3 claim 3 below) is **retargeted from Paper 2 to Paper 1 v2**, where it
+becomes a *structural strengthening* of the existing visibility-asymmetry claim: see the new
+`docs/paper/draft.tex` §3.6 ("The cross-session boundary"), with weave-ins to §2.2 (convergence),
+§7.3 (load-bearing claim), and §7.9 (scope-and-reset as the open problem). Omnigent's per-session,
+root-keyed budget is cited there as the *deployed boundary / existence proof*, re-verified against
+`omnigent-ai/omnigent @ 0fe2d94`.
+
+The compensation axis is **unchanged and stays in Paper 2**: the "no compensation / saga
+primitive" claim (§3 claim 1) and the prevent / accumulate / compensate matrix (§4) remain Paper 2
+territory. Pulling the cross-session boundary up into Paper 1 v2 in fact keeps Paper 2's axis
+*cleaner* — Paper 2 is now strictly the post-action compensation story, with no cross-session
+scope-policy material competing for its thesis.
+
 ## 1. Gate outcome and decision
 
 Phase 0 was a falsification gate on the thesis that Omnigent's policy layer *cannot express a
@@ -49,13 +66,20 @@ evidence supports them and they are the only Omnigent claims permitted downstrea
    author-maintained integer (`risk_score`'s points). The runtime understands "labels" (monotonic
    ordinals) and "usage" (priced tokens) as first-class; it has no irreversibility quantity with
    its own semantics, decay, or compensability.
-3. **Custom path accumulators are per-conversation, not tree-wide.** Tree-wide aggregation is
-   hardcoded for usage/cost only (`builder.py:728`, plus two reserved keys routed to root in
-   `engine.py:487`). A custom irreversibility accumulator across a multi-agent spawn tree would
-   not aggregate without reimplementing that plumbing.
+3. **The accumulator is per-session / per-spawn-tree, and resets at the independent-session
+   boundary.** The built-in session budget is routed to the root conversation, so it ratchets
+   across a parent+sub-agent spawn tree but resets when a new top-level session resolves to its
+   own root (`engine.py` root resolution `root_conversation_id or conversation_id`; spawn-tree
+   routing of the session budget to root; per-conversation persistence via `set_session_state` to
+   a JSON column in `conversation_store/sqlalchemy_store.py` — re-verified @ `0fe2d94`). Custom
+   (arbitrary-key) accumulators are per-conversation only; tree-wide aggregation is hardcoded for
+   usage/cost. The cross-session integral, its weights, and a reset-and-scope policy are not
+   expressed. **Retargeted (2026-06-14, §0) to Paper 1 v2 as the deployed-boundary existence proof
+   in `draft.tex` §3.6** — no longer a Paper 2 sidebar.
 
-Claim discipline: (1) is the strong, paper-bearing claim; (2) and (3) are supporting nuance, not
-headlines.
+Claim discipline: (1) is the strong, paper-bearing claim for **Paper 2** (compensation). (3) is
+now a structural strengthening for **Paper 1 v2** (the cross-session boundary, §3.6). (2) remains
+supporting nuance, not a headline.
 
 ## 4. Paper 2 fold — related-work hooks
 
