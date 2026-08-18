@@ -10,6 +10,8 @@
 
 Run the session on **Claude Fable 5** (`claude-fable-5`): `claude --model claude-fable-5`, or `/model` inside the session. Rationale: the work is judgment-heavy scholarly surgery — restating a formal claim so it survives adversarial review next to a Coq-mechanized theorem, compressing 22 pages to 9 without losing the honest-negative results, and writing differentiation language that concedes exactly enough. That is the profile where the most capable model earns its cost. If Fable 5 is not available on this account, use **Claude Opus 5** (`claude-opus-5`) — do not go below Opus-tier for the drafting phases. Keep effort at the Claude Code default (`xhigh`); use `max` via `/model` settings for Phase 2 (the Proposition and abstract) if output quality seems off. Mechanical subtasks (BibTeX formatting, figure regeneration, LaTeX debugging) can be delegated to subagents on `claude-sonnet-5` or `claude-haiku-4-5` — never the prose.
 
+**Verify model availability before Phase 1.** The IDs above (`claude-fable-5`, `claude-opus-5`, `claude-sonnet-5`, `claude-haiku-4-5`) are the intended tiers, not hard requirements — provisioning varies by account. If a named model isn't available, substitute the nearest equivalent from the same tier (any Opus-tier is acceptable for the drafting phases; do not drop below Opus-tier for prose). Don't stall the kickoff on an exact ID.
+
 Separate question, often confused: the **models used *inside* the paper's experiments** are fixed by Phase 6 below (`claude-sonnet-4-20250514` baseline, unchanged; additions only per decision D6). Do not "upgrade" the eval model as part of the rewrite — comparability with the published N=10 data would be destroyed.
 
 ### Git
@@ -109,7 +111,9 @@ Non-negotiable deletions: the §7.2 supply-chain/"data spoilage" block (from "Th
 
 ## 6. Phase 5 (post-Aug 29, only if D6 = yes) — Cross-model replication for the TMLR version
 
-Scope: scenarios A2, A4, A3, D1; both agents; N=10; **three** models:
+Scope: scenarios `A2_fanout`, `A4` (see naming note below), `A3_compounding`, `D1_auto_responder_loop`; both agents; N=10; **three** models:
+
+**Baseline data location (read before you look for per-scenario files).** There are *no* `eval_n10_A2.json` / `_A3` / `_D1` standalone files. The published N=10 baseline for these lives inside `eval/results/eval_n10_full_v2.json` under the `scenarios` array, keyed by full scenario ID (`A2_fanout`, `A3_compounding`, `D1_auto_responder_loop`, etc.). `A4` is the exception — it *does* have a standalone `eval/results/eval_n10_A4.json`. Extract each scenario's baseline object from `full_v2.json` (or the standalone file for A4) as your comparison anchor; do not re-run the Sonnet-4 baseline.
 
 | Role | Model ID | Note |
 |---|---|---|
@@ -124,9 +128,9 @@ Predictions to test (write them down *before* running, they go in the paper): ac
 - `temperature`/`top_p`/`top_k`: **removed on `claude-opus-5`** (400 error). Fine on Sonnet 4 and Haiku 4.5.
 - Assistant-message prefill: **400 on `claude-opus-5`** (fine on Sonnet 4 / Haiku 4.5). Grep for messages ending in an assistant turn.
 - `thinking: {type:"enabled", budget_tokens:N}`: **400 on `claude-opus-5`** (it's adaptive-or-omit there); Haiku 4.5 still uses `budget_tokens` if thinking is wanted. Simplest uniform choice: run all models with thinking omitted **except** note that `claude-opus-5` then runs adaptive by default — if the baseline ran without thinking, either accept the asymmetry and disclose it in the paper's methods, or ask Mihir. Do not silently change what "one LLM call" means across models; `llm_step_count` comparability is a published metric.
-- Model ID must be a parameter, not a constant — thread it through `LLMClient` and the harness CLI (`--model`), keep `claude-sonnet-4-20250514` the default.
+- Model ID is *already* a parameter — `src/shared/llm.py:15` defines `model: str = "claude-sonnet-4-20250514"` as the client default (not a hardcoded constant). The remaining work is only to expose it: add a `--model` flag to the harness CLI and thread it into `LLMClient`, keeping `claude-sonnet-4-20250514` the default. Don't go hunting for a hardcoded constant to replace — there isn't one.
 
-Cost is small (order of 1–2K API calls; likely single-digit dollars on Haiku, tens on Opus 5 at $5/$25 per MTok). Results go to new JSONs (`eval_n10_<scenario>_<model>.json`) — never overwrite the originals.
+Cost is small (order of 1–2K API calls; likely single-digit dollars on Haiku, tens on Opus 5 at $5/$25 per MTok). Results go to new JSONs named with the **full scenario ID** to match the baseline keys: `eval_n10_<full_scenario_id>_<model>.json` (e.g. `eval_n10_A2_fanout_claude-opus-5.json`) — never overwrite the originals or the shared `eval_n10_full_v2.json`.
 
 ---
 
@@ -153,4 +157,4 @@ Cost is small (order of 1–2K API calls; likely single-digit dollars on Haiku, 
 
 ## Kickoff prompt (paste into the local session)
 
-> Read HANDOVER.md at the repo root and execute it. Start with the session-setup section and the decisions gate — ask me to confirm D1–D3 before drafting. Then do Phase 0 (download and verify the two arXiv papers) before any prose work. I take the pen on all paper text: show me each major unit as you draft it.
+> Read HANDOVER.md at the repo root and execute it. Start with the session-setup section — confirm the drafting model is available (substitute a same-tier model if not) — and the decisions gate: ask me to confirm D1–D3 before drafting. Then do Phase 0 (download and verify the two arXiv papers) before any prose work. I take the pen on all paper text: show me each major unit as you draft it.
