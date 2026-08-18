@@ -13,7 +13,9 @@ Consequence: **arXiv-first publication is closed for this work.** The new sequen
 
 ## Immediate action: Zenodo deposit (priority timestamp)
 
-**Why now:** the draft's claims sit close to two recent preprints — Parallax (arXiv:2604.12986) and McCann's Necessity Theorem (arXiv:2604.27289) [UNVERIFIED: identifiers taken from the 2026-08-18 decision context; neither paper is cited in this repo yet — see TODO-1 below]. With arXiv closed, the priority timestamp has to come from somewhere else. Zenodo issues a DataCite DOI at publish time, immediately and at no cost, with versioned DOIs (a concept DOI plus one DOI per version), so a v1 deposit now does not block a revised v2 later.
+**Why:** the draft's claims sit close to two recent preprints — Parallax ("Why AI Agents That Think Must Never Act," Joel Fokou, arXiv:2604.12986, 2026-04-14) and McCann's Necessity Theorem ("Mechanized Foundations of Structural Governance," Alan L. McCann, arXiv:2604.27289, 2026-04-30) [identifiers/titles verified by web search 2026-08-18; neither paper is cited in this repo yet — see TODO-1 below]. With arXiv closed, the priority timestamp has to come from somewhere else. Zenodo issues a DataCite DOI at publish time, immediately and at no cost, with versioned DOIs (a concept DOI plus one DOI per version), so a v1 deposit now does not block a revised v2 later.
+
+> **Timing revised 2026-08-18 (later same day):** both proximate papers are verified as published in April 2026, so the priority race against them specifically is already settled; the timestamp now protects this paper's *delta* against future work. Depositing the pre-revision draft — which cites neither paper — would create a permanent flawed record for negligible priority gain. **New plan: deposit the post-surgery revision (~Aug 27–28), per [REWRITE_PLAN.md](REWRITE_PLAN.md) §8–9.**
 
 Steps (deposit itself is **not yet done** — prep only):
 
@@ -73,6 +75,8 @@ Facts below were checked by web search on 2026-08-18 (direct fetches of the work
 4. ICLR 2027 (Sep 25) only if the TMLR route is rejected in time or deliberately skipped — decide by mid-September.
 
 ## Revision TODOs from the rejection audit
+
+> **Superseded in part, 2026-08-18 (later same day):** the decision was made to do a full rewrite rather than patch these TODOs individually — see [REWRITE_PLAN.md](REWRITE_PLAN.md), which absorbs TODO-1 through TODO-5 into its §2 (prior-art repositioning) and §3 (new spine). The TODOs below stand as the audit record.
 
 The most plausible substantive reading of the decline: the paper's differentiation from recent closely-related prior art is not visible where a moderator or reviewer looks first. Audit of the current draft (`docs/paper/draft.md` / `draft.tex`, 2026-08-18) against that reading:
 

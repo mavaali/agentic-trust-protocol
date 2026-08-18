@@ -38,7 +38,7 @@ AI safety; LLM agents; agent verification; path-level safety; irreversibility; t
 - **Language:** English
 - **Related identifiers:**
   - `https://github.com/mavaali/agentic-trust-protocol` — *is supplemented by* (code, scenarios, eval results)
-  - Parallax (arXiv:2604.12986) and McCann (arXiv:2604.27289) — *references*, once verified and cited in the draft (PUBLICATION_PLAN.md TODO-1) [UNVERIFIED identifiers — confirm on arXiv before entering them]
+  - Parallax, "Why AI Agents That Think Must Never Act" (arXiv:2604.12986) and McCann, "Mechanized Foundations of Structural Governance" (arXiv:2604.27289) — *references*, once cited in the revised draft (REWRITE_PLAN.md §2) [identifiers/titles verified via web search 2026-08-18; confirm against arXiv at upload time]
 - **Notes field (suggested):** "Submitted to arXiv 2026-08; declined by moderation (MOD-100537). Deposited on Zenodo for timestamp priority while under submission to a peer-reviewed venue."
   - *(Optional — it is honest and preempts "why isn't this on arXiv?"; drop the parenthetical if preferred.)*
 
