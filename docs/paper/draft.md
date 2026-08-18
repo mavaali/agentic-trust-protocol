@@ -1,6 +1,6 @@
 # Two-Way Doors, One-Way Trajectories: A Compositional Account of LLM Agent Safety
 
-*v1 arXiv draft — N=10 across 10 scenarios. 2026-04-27.*
+*v1 draft — N=10 across 10 scenarios. 2026-04-27. (Publication status, 2026-08-18: arXiv submission declined by moderation, MOD-100537; now targeting a workshop/journal venue with a Zenodo DOI deposit for the timestamp — see [PUBLICATION_PLAN.md](../../PUBLICATION_PLAN.md).)*
 
 ---
 
@@ -415,7 +415,7 @@ Eval JSONs at [eval/results/](../../eval/results/): `eval_n10_full_v2.json` (9-s
 
 ## Companion artifacts
 
-- **arXiv preprint** — this draft, once references and figures are finalized.
+- **Preprint/paper** — this draft. arXiv submission declined 2026-08-18 (moderation); route is now a peer-reviewed workshop/journal venue plus a Zenodo DOI deposit ([PUBLICATION_PLAN.md](../../PUBLICATION_PLAN.md)).
 - **Companion blog post** — a public-facing version of the framing on `waglesworld.com` and LinkedIn. The door metaphor as the title; the visualizations from §6 as the visual core.
 - **GitHub repo** — clean implementation, reproducible scenarios, well-documented. Public.
 - **Two follow-ups in the queue:** the full Visibility × Enforcement factorial (§7.9), and the compensating-transactions paper ([paper2_outline.md](../paper2_outline.md)).

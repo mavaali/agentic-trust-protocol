@@ -29,7 +29,7 @@ We do not claim a novel theorem. We do not claim a novel architecture. We claim 
 
 Goal: **thought leadership in the agent-safety space**. The thought-leadership lever in a crowded technical field is *naming and organizing*, not theorem novelty. Influential AI-safety papers (ReAct, Constitutional AI, Chain of Thought) often combined or named existing ideas; the framing made them citable. We aim for that.
 
-Two-month execution timeline targets arXiv preprint plus companion blog post (LessWrong, LinkedIn) plus open-source repo as the deliverable bundle. Workshop submission deferred to whatever cycle aligns naturally; arXiv preprint is the primary public artifact.
+Two-month execution timeline originally targeted an arXiv preprint plus companion blog post (LessWrong, LinkedIn) plus open-source repo as the deliverable bundle, with workshop submission deferred. **Updated 2026-08-18: arXiv declined the submission (moderation, MOD-100537) and arXiv-first publication is closed** — future arXiv submissions from this account require a journal reference/DOI. The workshop/journal venue is now the primary route, with a Zenodo DOI deposit for the priority timestamp. See [../PUBLICATION_PLAN.md](../PUBLICATION_PLAN.md).
 
 ## Scope
 
@@ -50,7 +50,7 @@ Two-month execution timeline targets arXiv preprint plus companion blog post (Le
 - [ ] Empirical results section
 - [ ] Companion blog post
 - [ ] Github repo cleanup and documentation
-- [ ] arXiv preprint submission
+- [ ] ~~arXiv preprint submission~~ — declined by arXiv moderation 2026-08-18; replaced by workshop/journal submission + Zenodo DOI deposit ([../PUBLICATION_PLAN.md](../PUBLICATION_PLAN.md))
 
 ## Note on prior framings
 

@@ -25,7 +25,7 @@ The four composition modes are not equally exposed by aligned 2026 frontier mode
 - Real email integration (the mock backend is intentional — adversarial scenarios cannot be run against real systems).
 - Learned irreversibility classifier (current implementation uses hand-specified scores).
 - Multi-agent coordination.
-- arXiv preprint — finalizing for submission.
+- Published paper. arXiv submission was declined by moderation on 2026-08-18 (MOD-100537: "needing significant review and revision before publishable in a conventional journal"; account now requires a journal reference/DOI for future arXiv submissions). New sequencing: peer-reviewed workshop/journal venue + Zenodo DOI deposit for a priority timestamp. See [PUBLICATION_PLAN.md](PUBLICATION_PLAN.md).
 
 ## Known limitations
 

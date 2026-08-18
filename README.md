@@ -2,7 +2,9 @@
 
 Research prototype: path-level safety architecture for AI agents.
 
-> **Status:** Active research prototype. Single-replicate scenario data so far; multi-replicate evaluation in progress. See [STATUS.md](STATUS.md) for what's working and what isn't. Expect rough edges. Pre-publication feedback welcome.
+> **Status:** Active research prototype. See [STATUS.md](STATUS.md) for what's working and what isn't. Expect rough edges. Pre-publication feedback welcome.
+>
+> **Paper status:** arXiv submission declined 2026-08-18 (moderation, MOD-100537); arXiv-first publication is closed for this work. Now pursuing a workshop/journal venue plus a Zenodo DOI deposit for a priority timestamp. See [PUBLICATION_PLAN.md](PUBLICATION_PLAN.md).
 
 ## The Thesis
 
@@ -85,6 +87,7 @@ Run `run-eval` to generate results across the available scenarios, or see [eval/
 - [docs/failure-catalog.md](docs/failure-catalog.md) — ten cases organized by composition mode
 - [docs/literature-map.md](docs/literature-map.md) — annotated bibliography across eight relevant areas
 - [STATUS.md](STATUS.md) — current state, known limitations, what's not done yet
+- [PUBLICATION_PLAN.md](PUBLICATION_PLAN.md) — publication route after the 2026-08-18 arXiv decline: venue shortlist, Zenodo deposit, revision TODOs
 - [AUTHORS.md](AUTHORS.md) — current authorship and forthcoming attribution
 - [CITATION.cff](CITATION.cff) — software citation metadata
 

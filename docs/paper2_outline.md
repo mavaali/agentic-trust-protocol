@@ -138,7 +138,7 @@ Diagram: Plan-then-Execute architecture extended with a Compensation channel, pa
 
 ## Timeline
 
-If the current paper lands in arXiv in ~6 weeks, this follow-up could realistically land another ~8-10 weeks after that. So total timeline from project start to v2 preprint: ~4-5 months.
+~~If the current paper lands in arXiv in ~6 weeks, this follow-up could realistically land another ~8-10 weeks after that. So total timeline from project start to v2 preprint: ~4-5 months.~~ **Updated 2026-08-18:** arXiv declined Paper 1 (moderation, MOD-100537) and future submissions from this account require a journal reference/DOI, so this timeline no longer holds. Paper 2's schedule now keys off Paper 1's workshop/journal acceptance — see [../PUBLICATION_PLAN.md](../PUBLICATION_PLAN.md).
 
 ## Possible alternative framings / sibling papers
 

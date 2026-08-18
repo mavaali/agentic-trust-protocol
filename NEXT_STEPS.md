@@ -2,6 +2,8 @@
 
 Plan as of 2026-04-27 evening. Pick up here next time.
 
+> **Update 2026-08-18:** arXiv declined the submission (moderation, MOD-100537) — paper judged as "needing significant review and revision before publishable in a conventional journal," and the account is now restricted: future arXiv submissions require a journal reference/DOI or are auto-declined. The "arXiv preprint first" sequencing below is dead. New sequencing: peer-reviewed workshop/journal venue + Zenodo DOI deposit for the priority timestamp. See [PUBLICATION_PLAN.md](PUBLICATION_PLAN.md). References to "the arXiv preprint" below should be read as "the paper" under the new plan.
+
 ---
 
 ## State of play
@@ -127,8 +129,8 @@ Better use of the same time: qualitative trace analysis (done for A3 above) and 
 
 1. Run `cat NEXT_STEPS.md` to load context.
 2. Check `eval/results/eval_n10_C2_sharpened.json` for the C2 sharpened-prompt result.
-3. Decide: arXiv preprint as-is, or build A4 first?
-4. Per memory `feedback_arxiv_pen.md`: Claude produces the v1 arXiv draft; Mihir takes the pen for revisions.
+3. ~~Decide: arXiv preprint as-is, or build A4 first?~~ (Superseded 2026-08-18: arXiv declined; see PUBLICATION_PLAN.md.)
+4. Per memory `feedback_arxiv_pen.md`: Claude produces the v1 draft; Mihir takes the pen for revisions.
 
 ---
 
@@ -136,4 +138,4 @@ Better use of the same time: qualitative trace analysis (done for A3 above) and 
 
 - The empirical story is *narrower but sharper* than where it started. The paper's real contribution: variance-asymmetry on every scenario + honest reporting of two failure modes (B1, A3) + a fix (Tweak A/B) for one of them.
 - A3 is a stronger "honest paper" finding than B1 was, because it survives the N=10 averaging and shows the architecture *adding* failure modes that the naive baseline doesn't reach.
-- arXiv preprint first; `waglesworld.com` / LinkedIn distribution second; LessWrong remains closed for now (auto-flag rejection earlier).
+- ~~arXiv preprint first~~ (arXiv declined 2026-08-18; MOD-100537). New order: workshop/journal venue + Zenodo DOI first; `waglesworld.com` / LinkedIn distribution second; LessWrong remains closed for now (auto-flag rejection earlier).
