@@ -5,6 +5,10 @@
 \usepackage{booktabs}
 \usepackage[round,authoryear]{natbib}
 \usepackage{amsmath, amssymb}
+\usepackage{amsthm}
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{corollary}{Corollary}[proposition]
+\newtheorem{definition}{Definition}[section]
 \usepackage{xcolor}
 \usepackage{caption}
 \usepackage{titlesec}
@@ -118,9 +122,45 @@ Bezos's per-decision framing (two-way doors versus one-way doors) and its limits
 
 Per-call alignment evaluates an action $a_t$ given prior world state $W_{t-1}$ and the prompt. It cannot, by construction, observe the path $\pi = (a_1, \ldots, a_n)$ or compute path-level cost $I^*(\pi, W_0)$, because the path and the world state at session-start are not in any single forward pass's input. This is a structural argument, not a capability argument: better models do not fix it.
 
-\subsection{A light formal sketch}
+\subsection{The Input-Availability Proposition}
+\label{sec:input-availability}
 
-Define $I: A \to [0, 1]$ as per-action irreversibility and $I^*: \Pi \times W \to [0, 1]$ as path irreversibility. The composition observation is that paths exist where $I(a_i) < 1\ \forall i$ and $I^*(\pi) = 1$ --- a series of small, locally-reversible actions composing to total irreversibility. \citet{arthur1989} gives the formal version in economics, \citet{krakovna2018} in RL. We apply rather than re-prove.
+% Alternate name for Mihir to pick: "Observability Proposition". Input-Availability
+% names the mechanism, not just the symptom, and matches the SS3.5 prose verbatim.
+
+Define $I: A \to [0, 1]$ as per-action irreversibility and $I^*: \Pi \times W \to [0, 1]$ as path irreversibility over $\pi = (a_1,\ldots,a_n)$ from initial world state $W_0$. The composition observation is that paths exist where $I(a_i) < 1\ \forall i$ and $I^*(\pi) = 1$ --- a series of small, locally-reversible actions composing to total irreversibility. \citet{arthur1989} gives the formal version in economics, \citet{krakovna2018} in RL; we apply rather than re-prove. We now make the visibility asymmetry of §3.2 precise. Accumulation-mode overload is governed by the running weighted integral
+\[
+  S_t(\pi, W_0) \;=\; \sum_{i=1}^{t} w(a_i, W_{i-1})\, I(a_i),
+\]
+where $w: A \times W \to \mathbb{R}_{\ge 0}$ weights each action's irreversibility by the world state it acts on, together with a deployment threshold $\tau > 0$: the overload event at step $t$ is $S_t > \tau$. The triple $(I, w, \tau)$ is fixed by the deployment environment, not by the conversation.
+
+\begin{definition}[Bare per-call evaluator]
+\label{def:bare-evaluator}
+A \emph{bare per-call evaluator} is any function $E: P \times C \times A \to [0,1]$ mapping a (prompt, local context, proposed action) triple $(p, c_t, a_t)$ to an approval score. The local context $c_t \in C$ may include the full visible transcript --- the prompt, all prior actions $a_1,\ldots,a_{t-1}$, and their textual results. It does not include the weight function $w$, the threshold $\tau$, or any telemetry of the running value $S_t$. No assumption is made about how $E$ is computed: it may be a policy head, a fine-tuned judge, an external validator, or an arbitrary --- even uncomputable --- function of its inputs.
+\end{definition}
+
+\begin{proposition}[Input-Availability]
+\label{prop:input-availability}
+Let $E$ be any bare per-call evaluator. Then $E$ is constant on every set of executions that agree on $(p, c_t, a_t)$, while the overload predicate $\mathbf{1}[S_t > \tau]$ is not: for any transcript there exist deployments $(w, \tau)$ and $(w', \tau')$, both consistent with that transcript, under which the predicate takes different values. Consequently no bare per-call evaluator computes, or is nontrivially sensitive to, the running integral $S_t$, the weights $w$, or the threshold $\tau$: these quantities are not in its input domain, so its output cannot vary with them.
+\end{proposition}
+
+\begin{proof}[Proof sketch]
+Immediate from the domains. $E$'s output is a function of $(p, c_t, a_t)$ alone. Fix any execution and its step-$t$ input triple; rescaling $w$ or $\tau$ leaves $(p, c_t, a_t)$ unchanged (neither appears in the transcript) while moving $S_t$ across $\tau$ at will. $E$ returns the same score in both deployments, so it agrees with $\mathbf{1}[S_t > \tau]$ in at most one of them. The same construction rules out any nontrivial dependence, not just exact computation.
+\end{proof}
+
+\begin{corollary}[Locus-independence]
+\label{cor:locus}
+Proposition~\ref{prop:input-availability} holds for \emph{any} per-action evaluator, wherever it runs: the aligned model itself, a guardrail layer, or an independent external validator. Definition~\ref{def:bare-evaluator} constrains only the input domain, not the implementation. In particular, a validator that ``evaluates each action independently, with no carry-over of approval from previous actions'' \citep{fokou2026parallax} is a bare per-call evaluator by construction, and inherits the blindness: its tiers can gate each action's local risk but cannot gate the accumulation $S_t$.
+\end{corollary}
+
+\begin{corollary}[Capability- and computability-independence]
+\label{cor:orthogonality}
+Proposition~\ref{prop:input-availability} invokes no computability assumption and no bound on $E$'s capability: it holds when every relevant predicate is decidable and when $E$ is an arbitrary function, including a computationally unbounded one. It is therefore orthogonal to the Necessity Theorem of \citet{mccann2026governance}, which bounds what any component can \emph{compute} via reduction to Rice's theorem. Our result bounds what the per-call component can \emph{see}. The two compose: even granting an oracle for McCann's semantic-judgment problems, a bare per-call evaluator still misses accumulation overload, because an oracle cannot evaluate a query it is never handed.
+\end{corollary}
+
+Proposition~\ref{prop:input-availability} is nearly definitional, and we state it as one deliberately: a function cannot depend on arguments outside its domain. Its value is not depth but precision and citability --- it fixes \emph{exactly} which quantities ($S_t$, $w$, $\tau$) are absent from the per-call input domain, so that downstream claims can be checked against it. Those claims live in the corollaries and in the taxonomy of §3.4: of the four composition modes, premise and classification failures carry a within-context signal and iteration a partial one, so per-call evaluation can in principle catch them; accumulation is the unique mode whose signal the Proposition places wholly outside the evaluator's inputs. The Proposition is the boundary marker; the partition is the payload.
+
+The hypothesis is drawn carefully, and two exclusions matter. First, history-in-context does not escape it: Definition~\ref{def:bare-evaluator} already grants $E$ the full transcript of prior actions, and the proof survives precisely because the transcript pins down neither the weighting $w$ of past actions' irreversibility nor the anchor $\tau$ for how much accumulation is too much --- the gap is input-availability, not context length. Second, the Proposition is silent, by design, on evaluators whose inputs are \emph{augmented}: a deployment that feeds the agent real-time budget telemetry --- the Prompted-Budget cell of §7.9, where $(S_t, \tau)$ enter $c_t$ --- falls outside Definition~\ref{def:bare-evaluator}, and the Proposition makes no claim that such evaluators must fail. Whether visibility without enforcement suffices is an empirical question we flag as untested future work (§7.9); the Proposition establishes only that the \emph{bare} per-call input domain lacks the signal.
 
 \subsection{The four composition modes}
 
