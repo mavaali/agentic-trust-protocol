@@ -52,35 +52,27 @@ Prior work separates agent reasoning from execution (Parallax) and proves govern
 \end{abstract}
 
 \section{Introduction}
+\label{sec:intro}
 
-\subsection{The motivating shift}
+A 2026 frontier model, instructed to act as an email assistant, refuses CEO-fraud wire transfers, prompt-injection commands, and reply-all blast attempts on its own merits. We confirm this in our smoke tests: Sonnet~4 declines the canonical adversarial scenarios without any architectural intervention --- per-call alignment has substantially closed the per-call attack surface.
 
-A 2026 frontier model, instructed to act as an email assistant, refuses CEO-fraud wire transfers, prompt-injection commands, and reply-all blast attempts on its own merits. We confirm this in our smoke tests: Sonnet~4 declines the canonical adversarial scenarios without any architectural intervention. Per-call alignment has substantially closed the per-call attack surface.
+What remains is a different shape of failure. An agent processing 8 unread emails will execute 4--6 reasonable acknowledgments before hitting any internal stopping signal. An agent asked to ``set up the recurring quarterly reviews'' will schedule 4 calendar invites because it was asked to. An agent asked to ``send the welcome packet to BaoLabs'' will fabricate a recipient address (\texttt{contact@baolabs.com}) when no contact email is provided --- sending confidential onboarding materials to a non-existent address with no blast-radius defect on any individual call. None of these are alignment failures. Each individual action is locally reasonable. The harm is the path.
 
-What remains is a different shape of failure. An agent processing 8 unread emails will execute 4--6 reasonable acknowledgments before hitting any internal stopping signal. An agent asked to ``set up the recurring quarterly reviews'' will schedule 4 calendar invites because it was asked to. An agent asked to ``send the welcome packet to BaoLabs'' will fabricate a recipient address (\texttt{contact@baolabs.com}) when no contact email is provided in the request --- sending confidential onboarding materials to a non-existent address with no blast-radius defect on any individual call. None of these are alignment failures. Each individual action is locally reasonable. The harm is the path.
+This observation admits a precise statement, which is the paper's central claim. A series of two-way doors composes into a one-way door whenever the world moves between actions. Per-call alignment classifies individual doors; only architecture observes paths. We state this as the \emph{Input-Availability Proposition} (\S\ref{sec:input-availability}): the residual failure surface for agents lives in information that, by construction, no single forward pass has access to --- so the question for any path-level failure mode is not whether the model is aligned enough to catch it, but whether the information needed to catch it is available to any per-call judge at all. The taxonomy, mechanism, and evaluation that follow are organized around that single axis.
 
-\subsection{The reframe}
-
-The interesting question is no longer \emph{``can architecture substitute for alignment''} --- that fight is settled in the model's favor for per-call attacks. The interesting question is \emph{what failures survive a well-aligned model, and what kind of intervention catches them.}
-
-\subsection{The framing}
-
-A series of two-way doors composes into a one-way door whenever the world moves between actions. Per-call alignment classifies \emph{individual} doors; only architecture observes \emph{paths}. The residual failure surface for agents lives in the part the agent walks across multiple calls --- a part that, by construction, no single forward pass has access to.
-
-\subsection{Contributions}
-
+\medskip
+\noindent\textbf{Contributions.}
 \begin{enumerate}[leftmargin=*]
-\item \textbf{Door composition as analytic framing} for path-level LLM agent safety, with a four-mode taxonomy (accumulation, premise, classification, iteration) organized by what information each mode requires to detect.
-\item \textbf{A minimal Plan-then-Execute architecture} (trust budget + staging area + irreversibility classifier) operationalizing the framing. Roughly 2k LOC including the evaluation harness; the airlock primitives themselves are about 700 LOC. Trace-free: requires only declared per-action irreversibility scores, not training data.
-\item \textbf{An empirical decomposition} ($N = 10$ across 10 scenarios) of which architectural primitive catches which composition mode. Seven clean architectural wins, one tie (per-call alignment handles it), one architectural failure ($A_3$, \emph{premise stated as fact and propagated across action types}), one marginal case bound by naive variance ($A_1$).
-\item \textbf{A refined failure-mode taxonomy} distinguishing \emph{premise-MISSING} (caught by read-path prompt: $B_1$, $B_2$, $A_4$) from \emph{premise-WRONG-AS-FACT} (uncaught: $A_3$). The architecture sees path \emph{shape}, not \emph{content veracity}.
-\item \textbf{The cleanest cross-scenario signal: variance asymmetry.} The architecture's contribution is reducing run-to-run variance in path cost --- \emph{bounding the tail}, not just lowering the mean. A deployer who needs a worst-case guarantee gets one from the architecture; from the naive baseline they get a wide tail.
-\item \textbf{A ``Structural Gaming'' hypothesis empirically refuted} at this $N$. The 10-scenario action-mode breakdown shows no evidence of the model shifting toward lower-irreversibility action types under budget pressure.
+  \item \textbf{Claim.} The door-composition framing, made precise as the Input-Availability Proposition: path-level failures are characterized by \emph{what information detection requires}, and per-call alignment cannot access cross-call information regardless of model quality (\S\ref{sec:input-availability}).
+  \item \textbf{Taxonomy.} Four composition modes --- accumulation, premise, classification, and iteration --- organized not by attack surface but by the information each mode's detection requires (\S\ref{sec:modes}).
+  \item \textbf{Mechanism and measurement.} A minimal trace-free Plan-then-Execute architecture (trust budget, staging, irreversibility classifier; declared per-action irreversibility scores, no training data), and an $N{=}10 \times 10$-scenario empirical decomposition of which primitive catches which mode: seven clean architectural wins, one tie, one failure, one marginal case. The headline quantitative signal is a variance asymmetry --- architecture reduces run-to-run variance in path cost, bounding the tail rather than merely the mean (\S\ref{sec:architecture}, \S\ref{sec:evaluation}).
+  \item \textbf{Boundary.} The one uncatchable mode: premise-WRONG-AS-FACT. A false premise stated as fact propagates across action types untouched, because architecture sees path \emph{shape}, not content \emph{veracity} (\S\ref{sec:a3-failure}).
 \end{enumerate}
 
 \subsection{What this paper does \emph{not} claim}
+\label{sec:nonclaims}
 
-We do not claim the underlying mathematics as novel. \citet{arthur1989} gives a formal stochastic model (a random walk with absorbing barriers) in which locally-reversible adoption steps lock in; \citet{krakovna2018} formalize stepwise relative reachability for safe RL; \citet{garcia1987sagas} give compositional reversal for distributed systems; \citet{dhodapkar2026safetydrift} make the path-level empirical claim for LLM agents specifically; \citet{delrosario2025planex} propose the Plan-then-Execute architectural pattern. We claim the \emph{framing}, the \emph{taxonomy}, and the \emph{minimal trace-free operationalization} for LLM agents specifically. We do not run a head-to-head comparison against SafetyDrift's learned monitor; that benchmark is a separate reimplementation effort.
+We do not claim the underlying mathematics as novel. \citet{arthur1989} gives a formal stochastic model of path-dependent lock-in; \citet{krakovna2018} formalize stepwise relative reachability; \citet{garcia1987sagas} give compositional reversal; \citet{dhodapkar2026safetydrift} make the path-level empirical claim for LLM agents; \citet{delrosario2025planex} propose the Plan-then-Execute pattern. We do not prove an undecidability or necessity result: our claim is input-availability --- it holds even for computationally unbounded models --- and is complementary to \citet{mccann2026governance}'s Rice's-theorem necessity result. We do not claim the reasoner/executor separation; that is \citet{fokou2026parallax}'s (and Plan-then-Execute's before it) --- our contribution sits inside that separation and adds the path dimension. We claim the \emph{framing}, the \emph{taxonomy}, and the \emph{minimal trace-free operationalization} for LLM agents specifically. We do not run a head-to-head comparison against SafetyDrift's learned monitor.
 
 \section{Related Work}
 
@@ -163,6 +155,7 @@ Proposition~\ref{prop:input-availability} is nearly definitional, and we state i
 The hypothesis is drawn carefully, and two exclusions matter. First, history-in-context does not escape it: Definition~\ref{def:bare-evaluator} already grants $E$ the full transcript of prior actions, and the proof survives precisely because the transcript pins down neither the weighting $w$ of past actions' irreversibility nor the anchor $\tau$ for how much accumulation is too much --- the gap is input-availability, not context length. Second, the Proposition is silent, by design, on evaluators whose inputs are \emph{augmented}: a deployment that feeds the agent real-time budget telemetry --- the Prompted-Budget cell of §7.9, where $(S_t, \tau)$ enter $c_t$ --- falls outside Definition~\ref{def:bare-evaluator}, and the Proposition makes no claim that such evaluators must fail. Whether visibility without enforcement suffices is an empirical question we flag as untested future work (§7.9); the Proposition establishes only that the \emph{bare} per-call input domain lacks the signal.
 
 \subsection{The four composition modes}
+\label{sec:modes}
 
 \begin{itemize}[leftmargin=*]
 \item \textbf{Accumulation.} Too many doors before retreat is feasible; the path crosses too much state.
@@ -182,6 +175,7 @@ A subtler observation, which our empirical results confirm: the four modes diffe
 This asymmetry is the empirical and conceptual core of the paper.
 
 \section{The Architecture}
+\label{sec:architecture}
 
 \subsection{The setting}
 
@@ -269,6 +263,7 @@ Plan-then-Execute structure with the three primitives from §4. Roughly 720 LOC 
 Sonnet~4 (\texttt{claude-sonnet-4-20250514}). Frontier-aligned. Per-call refusal of canonical attacks is a baseline, not a target.
 
 \section{Empirical Evaluation}
+\label{sec:evaluation}
 
 \subsection{Scenario design}
 
