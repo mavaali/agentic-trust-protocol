@@ -112,14 +112,9 @@ Two 2026 preprints are the nearest neighbors to this paper. \citet{mccann2026gov
 The contribution is framing and operationalization specific to LLM agents in 2026 --- after frontier alignment has substantially closed the per-call attack surface, and at the architectural layer where Plan-then-Execute structure is becoming standard.
 
 \section{Door Composition: A Framing}
+\label{sec:framing}
 
-\subsection{Two-way and one-way doors}
-
-Bezos's per-decision framing (two-way doors versus one-way doors) and its limits when applied to LLM agents. The colleague-attributed insight: \emph{a series of two-way doors composes into a one-way door whenever the world moves between steps.}
-
-\subsection{The visibility asymmetry}
-
-Per-call alignment evaluates an action $a_t$ given prior world state $W_{t-1}$ and the prompt. It cannot, by construction, observe the path $\pi = (a_1, \ldots, a_n)$ or compute path-level cost $I^*(\pi, W_0)$, because the path and the world state at session-start are not in any single forward pass's input. This is a structural argument, not a capability argument: better models do not fix it.
+Bezos's decision heuristic distinguishes two-way doors---choices that can be walked back---from one-way doors, which cannot. The heuristic is per-decision: classify each choice in isolation, spend deliberation only on the one-way doors. Applied to an LLM agent, this is exactly what per-call alignment does---evaluate each action $a_t$ against the current world state $W_{t-1}$ and the prompt, and gate the risky ones. The heuristic fails for agents for the reason a colleague of ours put memorably: \emph{a series of two-way doors composes into a one-way door whenever the world moves between actions.} Each action is individually reversible; the path $\pi = (a_1, \ldots, a_n)$ is not, because the world state each reversal would need has moved on. The information that makes the path a one-way door---the path itself, and the session-start state $W_0$ against which path-level irreversibility $I^*(\pi, W_0)$ is defined---is simply not in any single forward pass's input. The next subsection states this precisely as an input-availability proposition; it is a claim about what the evaluator is given, not about how well it reasons.
 
 \subsection{The Input-Availability Proposition}
 \label{sec:input-availability}
@@ -174,12 +169,15 @@ The hypothesis is drawn carefully, and two exclusions matter. First, history-in-
 These four exhaust the mechanisms by which $I^*(\pi) = 1$ arises in our framework, modulo per-call alignment failure under adversarial input (defense in depth, treated separately).
 
 \subsection{Why the modes are not equally exposed}
+\label{sec:mode-asymmetry}
 
-A subtler observation, which our empirical results confirm: the four modes differ in whether a single forward pass \emph{could} catch them. Premise mode (wrong date, wrong referent, wrong authorization) and classification mode (draft vs send) involve information present \emph{within} the action's local context --- the model can, in principle, notice the stale email date, the ambiguous ``John,'' or the ``I want to review'' signal in a single forward pass. Iteration mode admits a partial within-step signal: the model can sometimes recognize that a loop is forming if its context window contains enough prior actions.
+The Proposition treats the four modes uniformly: each is a way for $I^*(\pi) = 1$ to arise from individually acceptable actions. But the modes are not uniform in a respect the Proposition's hypothesis makes visible. The hypothesis excludes evaluators whose inputs happen to contain the path-level signal; whether the signal \emph{can} appear in a forward pass's input differs by mode, and that difference is what our empirical results measure.
 
-\textbf{Accumulation mode is structurally different.} Detecting cumulative-irreversibility overload requires observing the \emph{running integral of per-action irreversibility scores across the session} --- a weighted accumulation, not a raw count, where high-irreversibility actions deposit substantially more ``dose'' than low-irreversibility actions. The integral, the per-action weights, and the threshold against which the integral is compared are all \emph{external} to any single forward pass. The model has no access to its own action history beyond what its context window contains, and even when context contains prior actions, the model has no anchor for the scoring function or the threshold against which to compare. This is not a capability gap; it is an input-availability gap. A model with infinite reasoning ability would still miss accumulation failures because the relevant signal is not in its inputs. Architecture is the only place this signal exists.
+Premise mode (wrong date, wrong referent, wrong authorization) and classification mode (draft versus send) fail on information that is present in the action's local context: the stale email date, the ambiguous ``John,'' the ``I want to review'' signal all sit in the very input the model is already reading. A single forward pass can, in principle, catch these --- the failure is one of attention, not of input. Iteration mode is intermediate: a forming loop is partially visible when the context window happens to contain enough prior actions to reveal the repetition.
 
-This asymmetry is the empirical and conceptual core of the paper.
+Accumulation mode is different in kind. Detecting cumulative-irreversibility overload means observing the running sum $S_t = \sum_i w(a_i, W_{i-1})\, I(a_i)$ and comparing it to the threshold $\tau$. The sum, the weights $w$, and $\tau$ are all external to every forward pass: even a context window stuffed with prior actions gives the model no anchor for the scoring function or the threshold it is being scored against. No amount of reasoning over the available input recovers an input that was never supplied. A model with unbounded within-step reasoning would still miss accumulation failures, because what it lacks is not inference but data.
+
+This is the claim a reader should take from the paper if they take only one. It is not an empirical observation about current models; it is a structural fact about what per-call evaluation is given, and it survives any model improvement. The capability trajectory makes the point concrete: premise and classification failures are within-step failures, so they shrink as within-step reasoning improves --- we already observe this in 2026 models. Accumulation failures do not shrink, because the missing input cannot be supplied by better reasoning. The formal statement (\S\ref{sec:input-availability}) and the empirical decomposition (\S\ref{sec:evaluation}) are the same fact seen twice: the modes whose signal lives inside a forward pass are increasingly caught within-step, while the one mode whose signal lives only in cross-action state is caught only where architecture --- not the model --- holds that state. This asymmetry is the empirical and conceptual core of the paper.
 
 \section{The Architecture}
 \label{sec:architecture}
@@ -522,10 +520,6 @@ The Airlock primitives directly address ``Data Spoilage'' in agentic flows:
 \end{itemize}
 
 Ultimately, this architecture represents a shift from reactive monitoring to proactive supply-chain management for agentic processes. By treating agentic execution as a logistics problem rather than a pure reasoning challenge, we move away from the traditional, monolithic `data warehouse' approach --- where data is processed in bulk and `spoilage' is only discovered post-hoc --- toward a model of just-in-time delivery. The Airlock primitives act as quality gates in this supply chain: the staging area provides the necessary inspection buffer, the trust budget enforces a shelf-life on cumulative actions, and the classification layer ensures that only `fresh' and appropriate inputs flow to the final write-path. This perspective reframes safety as the mitigation of `data spoilage' within the agentic trajectory, acknowledging that just as physical goods deteriorate in an inefficient supply chain, LLM agent actions lose their semantic grounding when allowed to propagate unchecked across irreversible doors.
-
-\subsection{The structural-versus-within-step argument is the foundational claim}
-
-A reader who takes only one thing from this paper should take this: \emph{accumulation-mode failures are visible only in cross-action state, which no forward pass has access to.} This is not an empirical claim about current models --- it is a structural claim that survives any model improvement. As models get better at within-step reasoning, premise-MISSING and classification failures will become rarer (we already observe this in 2026). Accumulation-mode failures will not, because the missing input cannot be supplied by better reasoning. Architecture is the only place this signal exists, regardless of how capable the model becomes.
 
 \subsection{Limitations}
 
