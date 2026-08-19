@@ -69,10 +69,13 @@ Facts below were checked by web search on 2026-08-18 (direct fetches of the work
 
 ### Recommended sequencing
 
-1. **Now:** Zenodo v1 deposit (timestamp) — as soon as the two open metadata decisions are made.
-2. **By Aug 29:** cut a 4–9 page version and submit to **Who Verifies the Agents?** (or Evaluation of Interactive Agents — pick one).
-3. **In parallel or after workshop notification:** full-length submission to **TMLR** (rolling; peer-reviewed journal reference is the credential that plausibly reopens arXiv).
-4. ICLR 2027 (Sep 25) only if the TMLR route is rejected in time or deliberately skipped — decide by mid-September.
+> **Venue re-decided 2026-08-18 (D1 resolved): TMLR-primary, workshop dropped as the driver.** Mihir cannot travel to Sydney (reception commitment), so in-person presentation at *Who Verifies the Agents?* is out. The workshop was already marginal — **non-archival, no proceedings, no DOI**, and (per the venue analysis above) it **probably does not clear the arXiv restriction**. Its only remaining value was a forcing deadline plus a NeurIPS-workshop line — not worth a double-blind anonymization scramble against Aug 29 with no travel. The rewrite happens regardless: it produces the J-length paper, which **is** the Zenodo deposit (the DOI, no travel/deadline) **and** the TMLR submission (rolling; the journal reference that actually reopens arXiv). The Aug-27–28 Zenodo date and the D4 second-author clock are **no longer racing a 9-day fuse** — the authorship decision still matters, just off the critical path. **Workshop remains an optional bolt-on**: only if a same-cycle venue permits *remote* presentation, in which case the anonymized version is nearly free off the J draft (CFP remote-policy still [UNVERIFIED] — resolve only if that path is revived).
+
+1. **Rewrite at a sane pace** (Phases 0–2 of [HANDOVER.md](HANDOVER.md)) — no Aug-29 gun. Phase 0 prior-art verification is **done** (2026-08-18; see `docs/paper/prior-art/notes.md` — TODO-1 resolved, both papers verified full-text and cited).
+2. **Zenodo deposit** of the post-surgery J-length PDF → DataCite DOI (timestamp + citable home). Gate: the two open metadata decisions (second author, license). **Must bundle `eval/results/*.json` + scenario YAMLs** — they are gitignored and the Sonnet-4 baseline model is API-retired, so that archive is the only surviving record of the anchor data.
+3. **TMLR** (rolling; peer-reviewed journal reference is the credential that plausibly reopens arXiv) — the real target.
+4. **ICLR 2027** (Sep 25) only if the TMLR route is rejected in time or deliberately skipped — decide by mid-September.
+5. **Optional workshop** (remote-only): revisit only if a same-cycle venue allows remote presentation and the CV line is wanted.
 
 ## Revision TODOs from the rejection audit
 

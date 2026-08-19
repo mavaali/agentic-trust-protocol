@@ -4,6 +4,10 @@
 
 ---
 
+> **STATUS UPDATE 2026-08-18 — read before executing.** Two things changed after this doc was first written:
+> 1. **Venue re-decided: TMLR-primary, workshop dropped as the driver (D1 resolved).** Mihir cannot travel to Sydney (reception commitment); *Who Verifies the Agents?* is non-archival / no-DOI / probably-doesn't-clear-arXiv, so it is not worth an anonymization scramble against Aug 29. **There is no Aug-29 deadline anymore.** Run Phases 0–2 at a sane pace; the output is the J-length paper = the Zenodo deposit + the TMLR submission. **Phase 3 (workshop version) is now OPTIONAL** — do it only if a same-cycle venue allows *remote* presentation and Mihir wants the CV line. The deadline table in §8 is superseded (kept for history). See PUBLICATION_PLAN.md → "Recommended sequencing" for the current plan.
+> 2. **Phase 0 is DONE (2026-08-18).** Both prior-art papers verified full-text; neither escalation trigger fired (McCann is orthogonal Rice's-theorem work; Parallax is explicitly per-action — it *inherits* our accumulation blindness, strengthening the paper). Notes: `docs/paper/prior-art/notes.md`; bib entries added; `literature-map.md` §J written; paper still builds (22pp, 0 errors). Remaining Phase-0 nit: re-anchor the prior-art quotes to PDF page numbers before finalizing §2.6. **Start execution at Phase 1.**
+
 ## 0. Session setup
 
 ### Model for this session
@@ -43,7 +47,7 @@ cd docs/paper && pdflatex -interaction=nonstopmode draft.tex && bibtex draft \
 
 Ask Mihir to confirm (recommendations from the remote session in parentheses; full reasoning in REWRITE_PLAN.md §10 and the conversation of 2026-08-18):
 
-- **D1** venue (recommended: *Who Verifies the Agents?*, NeurIPS 2026 workshop, deadline **Aug 29 AoE** — but confirm he can attend Sydney or that remote presentation is allowed)
+- **D1** venue — **RESOLVED 2026-08-18: TMLR-primary, workshop optional/remote-only** (Mihir can't travel; deadline dropped). No confirmation needed; see the status banner above.
 - **D2** formal posture (recommended: named Proposition + corollaries)
 - **D3** title (recommended: "What the Forward Pass Cannot See: Verifying Path-Level Safety in LLM Agents"; can slide to Aug 26)
 - **D4** second author — remind him to contact the colleague **this week**; blocks Zenodo (Aug 27)
@@ -117,11 +121,13 @@ Scope: scenarios `A2_fanout`, `A4` (see naming note below), `A3_compounding`, `D
 
 | Role | Model ID | Note |
 |---|---|---|
-| Baseline (unchanged) | `claude-sonnet-4-20250514` | The published N=10 data — do not re-run needlessly; it's the anchor |
+| Baseline (unchanged) | `claude-sonnet-4-20250514` | The published N=10 data — **API-RETIRED (404 as of 2026-08-18)**, so it is frozen by necessity: use the archived JSONs as the anchor, do not attempt to re-run or spot-verify it live |
 | Cheaper/weaker | `claude-haiku-4-5` | 200K context — fine for these scenarios |
 | Stronger | `claude-opus-5` | The "does the blindness survive capability" data point |
 
 Predictions to test (write them down *before* running, they go in the paper): accumulation blindness and the A3 failure persist on the stronger model; variance asymmetry persists everywhere; premise-MISSING catches may improve model-side on `claude-opus-5`.
+
+**Baseline model is API-retired.** `claude-sonnet-4-20250514` returns 404 `not_found_error` on the account (verified 2026-08-18; the key is live — Haiku 4.5 and Sonnet 4.5 both 200). Consequences: (1) the Sonnet-4 baseline is the archived `eval/results/*.json` and nothing else — any code path that tries to hit it live will 404, so do not "verify" a baseline cell against the API; (2) the Zenodo deposit **must** bundle `eval/results/*.json` + the scenario YAMLs, since that archive is now the only surviving record of the anchor data; (3) Phase 5 replication is strictly additive on still-live models (Haiku 4.5 confirmed; use a current Opus/Sonnet-4.5-tier model for the "survives capability" arm and record the exact resolved ID in the results JSON).
 
 **Harness migration warning — check before running.** The harness was written for Sonnet 4, and the API surface changed for newer models. Audit `src/` + `eval/` for these and fix *minimally* (config-level; this is the one sanctioned touch of harness code, post-deadline):
 

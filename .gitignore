@@ -28,3 +28,6 @@ dist/
 # Generated paper artifacts (regenerable)
 docs/paper/arxiv_submission.tar.gz
 docs/paper/bibsleuth_report*
+
+# Prior-art source PDFs (large-ish, redownloadable from arXiv; notes.md is tracked)
+docs/paper/prior-art/*.pdf

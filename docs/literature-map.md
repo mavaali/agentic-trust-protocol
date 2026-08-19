@@ -102,6 +102,13 @@ The framing antecedent. Used widely in business decision-making; we apply it to 
 
 - **Bezos, J. (1997 onward), Annual Letter to Shareholders.** Two-way doors / one-way doors as a per-decision rubric for reversibility. *Cite for framing origin. Note: the original framing is per-decision; our extension (composition into one-way trajectories) is the contribution to apply to agent safety.*
 
+## J. Concurrent 2026 architectural / formal work (verified full-text 2026-08-18 — see prior-art/notes.md)
+
+The two nearest-neighbor 2026 papers. Both are *complementary*, not competing: one is a computability-necessity result, the other a per-action architecture — neither claims the path-level/cumulative dimension.
+
+- **McCann (2026), "Mechanized Foundations of Structural Governance," arXiv:2604.27289.** Coq-mechanized governance theory; the paper-proof **Necessity Theorem** reduces to Rice's theorem to show an architecturally opaque "reason" primitive is necessary for semantic-judgment problems. *Relationship: orthogonal. Ours is an **input-availability** claim about what a per-action evaluator can observe, independent of computability — it survives a decidable world and an unbounded model, where a Rice's-theorem result does not apply. Cite in §1.5 + §2.6: "we do not prove an undecidability/necessity result; our claim is complementary." Do NOT let a reviewer conflate the two — say explicitly ours is not a decidability result.*
+- **Fokou (2026), "Parallax: Why AI Agents That Think Must Never Act," arXiv:2604.12986.** Reasoner/executor separation + a multi-tier adversarial validator (Graduated Determinism), IFC sensitivity labels, and reversible-execution rollback; OpenParallax reference impl; 98.9–100% block on 280 adversarial cases. *Relationship: our contribution sits **inside** Parallax's separation and adds the dimension it explicitly omits. Parallax states "Shield evaluates each action independently, with no carry-over of approval from previous actions" (§4.2) and its only "budget" is a per-day validator-call rate limit — i.e. **no cumulative/path-level primitive**. So Parallax is precisely the per-action external validator our Proposition's corollary (a) ranges over: it inherits the accumulation blindness by design. Cite in §1.5 + §2.6 as the closest architectural neighbor and the motivating example for corollary (a).*
+
 ---
 
 ## Synthesis: where this paper sits
