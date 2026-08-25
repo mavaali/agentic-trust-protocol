@@ -1,0 +1,80 @@
+Zenodo deposit metadata — Two-Way Doors, One-Way Trajectories
+Prepared 2026-08-24. Matches the current post-reframe draft (Sonnet-5 headline, path-cost-bound framing).
+Upload bundle: draft.pdf (+ optional arxiv_submission.tar.gz for source).
+================================================================================
+
+RESOURCE TYPE
+--------------------------------------------------------------------------------
+Preprint
+
+
+TITLE
+--------------------------------------------------------------------------------
+Two-Way Doors, One-Way Trajectories: A Compositional Account of LLM Agent Safety
+
+
+AUTHORS / CREATORS
+--------------------------------------------------------------------------------
+Wagle, Mihir  —  Independent Researcher
+ORCID: 0009-0003-8502-7025
+(Work conducted in a personal capacity; no confidential/proprietary information — see title-page footnote.)
+
+
+LICENSE
+--------------------------------------------------------------------------------
+Creative Commons Attribution 4.0 International (CC-BY-4.0)
+
+
+DESCRIPTION  (= abstract, plain text — LaTeX markup stripped, math readable)
+--------------------------------------------------------------------------------
+Prior work separates agent reasoning from execution (Parallax) and proves
+governed autonomy requires opaque semantic judgment (McCann); we ask, of the
+path-level failures — reversible actions composing into cumulatively irreversible
+trajectories — that survive a per-action validator, which are verifiable at all,
+and from where. Our Input-Availability Proposition answers: no per-action
+evaluator, external validators included, can be sensitive to the irreversibility
+integral, which lies outside its input domain — independent of capability or
+computability. We partition failures into four composition modes (accumulation,
+premise, classification, iteration) by the information detection requires, then
+evaluate accumulation's minimal trace-free observer, a trust budget over an
+irreversibility classifier, across ten scenarios (N = 10) on the current frontier
+(Sonnet 5) and a weaker model (Haiku 4.5). The central quantitative result is a
+worst-case path-cost bound: where the naive agent deterministically saturates at
+maximum harm on accumulation (8.00 +/- 0.00 harmful actions), the observer holds
+path cost roughly 3x lower (2.90 +/- 0.30) — a bound from architecture alone, and
+one that widens as capability rises. One mode stays uncatchable: a premise stated
+as fact propagates untouched — trace-verified, 100% of surviving actions carry it
+— because architecture sees path shape, never veracity.
+
+
+KEYWORDS
+--------------------------------------------------------------------------------
+LLM agents; agent safety; AI alignment; path-level failures; irreversibility;
+Plan-then-Execute; trust budget; runtime verification; prompt injection;
+composition modes
+
+
+CATEGORIES (if cross-posting to arXiv)
+--------------------------------------------------------------------------------
+Primary:    cs.AI      Cross-list: cs.CR      Optional: cs.SE
+
+
+PUBLICATION / RELATION
+--------------------------------------------------------------------------------
+Publication date: August 2026
+Related identifier: TMLR submission (primary venue; add DOI/URL once assigned)
+Version: v1
+
+
+UPLOAD CONTENTS
+--------------------------------------------------------------------------------
+[x] draft.pdf         (26 pages, 6 figures — the compiled paper)
+[x] source .tar.gz    (draft.tex + draft.bbl + figures/ — recommended for reuse)
+
+
+FORMAT NOTES
+--------------------------------------------------------------------------------
+- 26 pages, 6 figures (rebuilt 2026-08-24, 0 undefined refs).
+- Confirm the two forward-dated 2026 citations render before deposit:
+  McCann arXiv:2604.27289, Fokou arXiv:2604.12986 (URLs resolve HTTP 200;
+  eyeball title/authors, since bibsleuth verified via trusted-DOI not DB match).

@@ -151,18 +151,27 @@ class ReadPath:
                         console.print(f"[bold cyan]Read Path:[/bold cyan] {block.text}")
                 break
 
-            if response.stop_reason == "tool_use":
-                tool_results = []
-                for block in assistant_content:
-                    if block.type == "tool_use":
-                        result = self._handle_tool(block.name, block.input, staged)
-                        console.print(f"[cyan]Read[{step}]:[/cyan] {block.name}")
-                        tool_results.append({
-                            "type": "tool_result",
-                            "tool_use_id": block.id,
-                            "content": result,
-                        })
-                messages.append({"role": "user", "content": tool_results})
+            # Answer every emitted tool_use block regardless of stop_reason. The API
+            # requires a tool_result for each tool_use id returned; a turn ending on
+            # max_tokens/pause_turn mid-batch still carries tool_use blocks that must
+            # be answered before the next request (else 400: tool_use without
+            # tool_result). Raising max_tokens makes such truncation rare.
+            tool_use_blocks = [
+                b for b in assistant_content if getattr(b, "type", None) == "tool_use"
+            ]
+            if not tool_use_blocks:
+                break
+
+            tool_results = []
+            for block in tool_use_blocks:
+                result = self._handle_tool(block.name, block.input, staged)
+                console.print(f"[cyan]Read[{step}]:[/cyan] {block.name}")
+                tool_results.append({
+                    "type": "tool_result",
+                    "tool_use_id": block.id,
+                    "content": result,
+                })
+            messages.append({"role": "user", "content": tool_results})
 
         return staged
 

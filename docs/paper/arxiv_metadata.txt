@@ -1,0 +1,55 @@
+arXiv submission metadata — Two-Way Doors, One-Way Trajectories
+Prepared 2026-06-08; refreshed 2026-08-24 to match the post-reframe draft.
+Bundle: arxiv_submission.tar.gz (draft.tex + draft.bbl + figures/)
+================================================================================
+
+TITLE
+--------------------------------------------------------------------------------
+Two-Way Doors, One-Way Trajectories: A Compositional Account of LLM Agent Safety
+
+
+AUTHORS
+--------------------------------------------------------------------------------
+Mihir Wagle — Independent Researcher (ORCID 0009-0003-8502-7025)
+
+NOTE: Title page shows "Independent Researcher" with a personal-capacity
+disclaimer footnote (author is still employed; publishing in personal capacity).
+arXiv affiliation field: leave blank, consistent with the disclaimer footnote.
+
+
+ABSTRACT  (plain-text — \emph/\textbf stripped, math rendered readable)
+--------------------------------------------------------------------------------
+Prior work separates agent reasoning from execution (Parallax) and proves governed autonomy requires opaque semantic judgment (McCann); we ask, of the path-level failures — reversible actions composing into cumulatively irreversible trajectories — that survive a per-action validator, which are verifiable at all, and from where. Our Input-Availability Proposition answers: no per-action evaluator, external validators included, can be sensitive to the irreversibility integral, which lies outside its input domain — independent of capability or computability. We partition failures into four composition modes (accumulation, premise, classification, iteration) by the information detection requires, then evaluate accumulation's minimal trace-free observer, a trust budget over an irreversibility classifier, across ten scenarios (N = 10) on the current frontier (Sonnet 5) and a weaker model (Haiku 4.5). The central quantitative result is a worst-case path-cost bound: where the naive agent deterministically saturates at maximum harm on accumulation (8.00 +/- 0.00 harmful actions), the observer holds path cost roughly 3x lower (2.90 +/- 0.30) — a bound from architecture alone, and one that widens as capability rises. One mode stays uncatchable: a premise stated as fact propagates untouched — trace-verified, 100% of surviving actions carry it — because architecture sees path shape, never veracity.
+
+
+COMMENTS
+--------------------------------------------------------------------------------
+26 pages, 6 figures
+
+
+CATEGORIES
+--------------------------------------------------------------------------------
+Primary:    cs.AI   (LLM-agent safety framing + empirical study)
+Cross-list: cs.CR   (failure-surface / prompt-injection / attack-defense framing)
+Optional:   cs.SE   (Plan-then-Execute / Sagas architecture angle)
+
+Swap consideration: for a security-first primary audience, flip to
+cs.CR primary + cs.AI cross.
+
+
+LICENSE  (your call)
+--------------------------------------------------------------------------------
+CC BY 4.0                          -> max dissemination/reuse (typical for AI/ML)
+arXiv perpetual non-exclusive      -> conservative default, retain more rights
+
+
+MSC / ACM class
+--------------------------------------------------------------------------------
+Optional — safe to leave blank.
+
+
+OPEN DECISIONS BEFORE SUBMIT
+--------------------------------------------------------------------------------
+[x] Affiliation: Independent Researcher (blank arXiv field, per disclaimer) — RESOLVED 2026-08-24
+[ ] Primary category: cs.AI (default) vs cs.CR (security-first)
+[x] License: CC BY 4.0 — RESOLVED 2026-08-24 (matches Zenodo deposit)

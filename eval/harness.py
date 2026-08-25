@@ -173,7 +173,9 @@ def run_scenario_airlock(scenario: dict[str, Any], llm: LLMClient) -> ScenarioRe
     )
 
 
-def run_eval(replicates: int = 1, scenario_filter: str | None = None) -> EvalResults:
+def run_eval(
+    replicates: int = 1, scenario_filter: str | None = None, model: str | None = None
+) -> EvalResults:
     """Run the full evaluation.
 
     Args:
@@ -195,7 +197,7 @@ def run_eval(replicates: int = 1, scenario_filter: str | None = None) -> EvalRes
         console.print(f"[red]No scenarios matched filter: {scenario_filter}[/red]")
         return EvalResults()
 
-    llm = LLMClient()
+    llm = LLMClient(model=model) if model else LLMClient()
     results = EvalResults()
 
     console.print(
@@ -299,9 +301,18 @@ def main() -> None:
         default="eval_results.json",
         help="Output JSON filename (written to eval/results/). Default: eval_results.json",
     )
+    parser.add_argument(
+        "--model",
+        "-m",
+        type=str,
+        default=None,
+        help="Anthropic model id (e.g. claude-sonnet-5, claude-haiku-4-5). Default: LLMClient default.",
+    )
     args = parser.parse_args()
 
-    results = run_eval(replicates=args.replicates, scenario_filter=args.scenario)
+    results = run_eval(
+        replicates=args.replicates, scenario_filter=args.scenario, model=args.model
+    )
     results.print_table()
     save_results(results, output_name=args.output)
 

@@ -1,0 +1,1323 @@
+{
+  "version": "0.1.3",
+  "timestamp": "2026-08-20T01:30:09.192818+00:00",
+  "config": {
+    "providers": [
+      "openalex",
+      "semantic_scholar",
+      "crossref",
+      "arxiv",
+      "dblp",
+      "pubmed"
+    ],
+    "offline": false,
+    "llm_enabled": false,
+    "section": null,
+    "uncited_only": false
+  },
+  "summary": {
+    "verified": 16,
+    "likely": 12,
+    "unverified": 5
+  },
+  "results": [
+    {
+      "key": "arthur1989",
+      "verdict": "likely",
+      "entry_type": "article",
+      "category": "academic",
+      "score": 0.8,
+      "reasons": [
+        "Likely match with score 0.80"
+      ],
+      "candidates": [
+        {
+          "provider": "openalex",
+          "title": "Competing Technologies, Increasing Returns, and Lock-In by Historical Events",
+          "authors": [
+            "W. Brian Arthur"
+          ],
+          "year": 1989,
+          "url": "https://doi.org/10.2307/2234208",
+          "ids": {
+            "doi": "10.2307/2234208",
+            "openalex": "https://openalex.org/W2129261459"
+          }
+        },
+        {
+          "provider": "crossref",
+          "title": "Competing Technologies, Increasing Returns, and Lock-In by Historical Events",
+          "authors": [
+            "W. Brian Arthur"
+          ],
+          "year": 1989,
+          "url": "https://doi.org/10.2307/2234208",
+          "ids": {
+            "doi": "10.2307/2234208"
+          }
+        },
+        {
+          "provider": "semantic_scholar",
+          "title": "INCREASING RETURNS AND LOCK-IN BY HISTORICAL EVENTS",
+          "authors": [
+            "B. Arthur",
+            "W. Arthur"
+          ],
+          "year": 1989,
+          "url": "https://www.semanticscholar.org/paper/d4ef2b08cb54a0ebfff2d9fdefbc607687167eff",
+          "ids": {
+            "doi": "10.2307/2234208"
+          }
+        }
+      ],
+      "patch": {
+        "url": "https://doi.org/10.2307/2234208"
+      }
+    },
+    {
+      "key": "arrow1974",
+      "verdict": "likely",
+      "entry_type": "article",
+      "category": "academic",
+      "score": 0.8,
+      "reasons": [
+        "Likely match with score 0.80"
+      ],
+      "candidates": [
+        {
+          "provider": "openalex",
+          "title": "Environmental Preservation, Uncertainty, and Irreversibility",
+          "authors": [
+            "Kenneth J. Arrow",
+            "Anthony C. Fisher"
+          ],
+          "year": 1974,
+          "url": "https://doi.org/10.2307/1883074",
+          "ids": {
+            "doi": "10.2307/1883074",
+            "openalex": "https://openalex.org/W2065699488"
+          }
+        },
+        {
+          "provider": "crossref",
+          "title": "Environmental Preservation, Uncertainty, and Irreversibility",
+          "authors": [
+            "Kenneth J. Arrow",
+            "Anthony C. Fisher"
+          ],
+          "year": 1974,
+          "url": "https://doi.org/10.2307/1883074",
+          "ids": {
+            "doi": "10.2307/1883074"
+          }
+        },
+        {
+          "provider": "semantic_scholar",
+          "title": "Environmental Preservation, Uncertainty, and Irreversibility",
+          "authors": [
+            "K. Arrow",
+            "A. Fisher"
+          ],
+          "year": 1974,
+          "url": "https://www.semanticscholar.org/paper/0870e85d90154f7da194e93620e9eec9eb75fa93",
+          "ids": {
+            "doi": "10.2307/1883074"
+          }
+        }
+      ],
+      "patch": {
+        "url": "https://doi.org/10.2307/1883074"
+      }
+    },
+    {
+      "key": "henry1974",
+      "verdict": "unverified",
+      "entry_type": "article",
+      "category": "academic",
+      "score": 0.675,
+      "reasons": [
+        "Best score 0.67 below threshold"
+      ],
+      "candidates": [
+        {
+          "provider": "openalex",
+          "title": "Investment decision under uncertainty, The irreversibility effect",
+          "authors": [
+            "Claude Henry"
+          ],
+          "year": 1974,
+          "url": "https://openalex.org/W1582563599",
+          "ids": {
+            "openalex": "https://openalex.org/W1582563599"
+          }
+        },
+        {
+          "provider": "openalex",
+          "title": "Social Complexity and Technological Choice: The Bay Area Rapid Transit System",
+          "authors": [
+            "Stephen Zwerling"
+          ],
+          "year": 1974,
+          "url": "https://openalex.org/W1481983877",
+          "ids": {
+            "openalex": "https://openalex.org/W1481983877"
+          }
+        },
+        {
+          "provider": "openalex",
+          "title": "Regional Growth Revisited",
+          "authors": [
+            "Harry W. Richardson"
+          ],
+          "year": 1974,
+          "url": "https://doi.org/10.52324/001c.10448",
+          "ids": {
+            "doi": "10.52324/001c.10448",
+            "openalex": "https://openalex.org/W2976223974"
+          }
+        }
+      ],
+      "patch": {}
+    },
+    {
+      "key": "hanemann1989",
+      "verdict": "likely",
+      "entry_type": "article",
+      "category": "academic",
+      "score": 0.8,
+      "reasons": [
+        "Likely match with score 0.80"
+      ],
+      "candidates": [
+        {
+          "provider": "openalex",
+          "title": "Information and the concept of option value",
+          "authors": [
+            "W. Michael Hanemann"
+          ],
+          "year": 1989,
+          "url": "https://doi.org/10.1016/0095-0696(89)90042-9",
+          "ids": {
+            "doi": "10.1016/0095-0696(89)90042-9",
+            "openalex": "https://openalex.org/W1964534415"
+          }
+        },
+        {
+          "provider": "crossref",
+          "title": "Information and the concept of option value",
+          "authors": [
+            "W.Michael Hanemann"
+          ],
+          "year": 1989,
+          "url": "https://doi.org/10.1016/0095-0696(89)90042-9",
+          "ids": {
+            "doi": "10.1016/0095-0696(89)90042-9"
+          }
+        },
+        {
+          "provider": "semantic_scholar",
+          "title": "Information and the concept of option value",
+          "authors": [
+            "W. Hanemann"
+          ],
+          "year": 1983,
+          "url": "https://www.semanticscholar.org/paper/2dce3867ffd90d5e9b20acc3f92f2bfa5f121d2b",
+          "ids": {
+            "doi": "10.1016/0095-0696(89)90042-9"
+          }
+        }
+      ],
+      "patch": {
+        "url": "https://doi.org/10.1016/0095-0696(89)90042-9"
+      }
+    },
+    {
+      "key": "david1985",
+      "verdict": "likely",
+      "entry_type": "article",
+      "category": "academic",
+      "score": 0.8,
+      "reasons": [
+        "Likely match with score 0.80"
+      ],
+      "candidates": [
+        {
+          "provider": "openalex",
+          "title": "Clio and the economics of QWERTY",
+          "authors": [
+            "Paul A. David"
+          ],
+          "year": 1985,
+          "url": "https://openalex.org/W1495886451",
+          "ids": {
+            "openalex": "https://openalex.org/W1495886451"
+          }
+        },
+        {
+          "provider": "openalex",
+          "title": "Clio and the Economics of QWERTY",
+          "authors": [
+            "qwerty qwerty"
+          ],
+          "year": 1985,
+          "url": "https://openalex.org/W3216660825",
+          "ids": {
+            "openalex": "https://openalex.org/W3216660825"
+          }
+        },
+        {
+          "provider": "openalex",
+          "title": "Protectionism and the Misaligned Dollar: The Case for Monetary Coordination",
+          "authors": [
+            "Ronald I. McKinnon",
+            "McKinnon, Ronald I."
+          ],
+          "year": 1985,
+          "url": "https://doi.org/10.22004/ag.econ.244430",
+          "ids": {
+            "doi": "10.22004/ag.econ.244430",
+            "openalex": "https://openalex.org/W2597350009"
+          }
+        }
+      ],
+      "patch": {
+        "url": "https://openalex.org/W1495886451"
+      }
+    },
+    {
+      "key": "krakovna2018",
+      "verdict": "verified",
+      "entry_type": "misc",
+      "category": "non_searchable",
+      "score": 0.0,
+      "reasons": [
+        "misc entry with URL"
+      ],
+      "candidates": [],
+      "patch": {}
+    },
+    {
+      "key": "eysenbach2018",
+      "verdict": "unverified",
+      "entry_type": "inproceedings",
+      "category": "academic",
+      "score": 0.6,
+      "reasons": [
+        "Best score 0.60 below threshold"
+      ],
+      "candidates": [
+        {
+          "provider": "openalex",
+          "title": "Leave no Trace: Learning to Reset for Safe and Autonomous Reinforcement Learning",
+          "authors": [
+            "Benjamin Eysenbach",
+            "Shixiang Gu",
+            "Julian Ibarz",
+            "Sergey Levine"
+          ],
+          "year": 2017,
+          "url": "https://doi.org/10.48550/arxiv.1711.06782",
+          "ids": {
+            "doi": "10.48550/arxiv.1711.06782",
+            "openalex": "https://openalex.org/W2769541360"
+          }
+        },
+        {
+          "provider": "crossref",
+          "title": "Safe Reinforcement Learning for High-Speed Autonomous Racing",
+          "authors": [
+            "Benjamin Evans",
+            "Hendrik  Willem Jordaan",
+            "Herman  Arnold Engelbrecht"
+          ],
+          "year": null,
+          "url": "https://doi.org/10.2139/ssrn.4349187",
+          "ids": {
+            "doi": "10.2139/ssrn.4349187"
+          }
+        },
+        {
+          "provider": "crossref",
+          "title": "Safe reinforcement learning for high-speed autonomous racing",
+          "authors": [
+            "Benjamin D. Evans",
+            "Hendrik W. Jordaan",
+            "Herman A. Engelbrecht"
+          ],
+          "year": 2023,
+          "url": "https://doi.org/10.1016/j.cogr.2023.04.002",
+          "ids": {
+            "doi": "10.1016/j.cogr.2023.04.002"
+          }
+        }
+      ],
+      "patch": {}
+    },
+    {
+      "key": "grinsztajn2021",
+      "verdict": "likely",
+      "entry_type": "inproceedings",
+      "category": "academic",
+      "score": 0.74,
+      "reasons": [
+        "Likely match with score 0.74"
+      ],
+      "candidates": [
+        {
+          "provider": "openalex",
+          "title": "There Is No Turning Back: A Self-Supervised Approach for Reversibility-Aware Reinforcement Learning",
+          "authors": [
+            "Nathan Grinsztajn",
+            "Johan Ferret",
+            "Olivier Pietquin",
+            "Preux, Philippe",
+            "Matthieu Geist"
+          ],
+          "year": 2021,
+          "url": "https://doi.org/10.48550/arxiv.2106.04480",
+          "ids": {
+            "doi": "10.48550/arxiv.2106.04480",
+            "openalex": "https://openalex.org/W3171528370"
+          }
+        },
+        {
+          "provider": "crossref",
+          "title": "READYS: A Reinforcement Learning Based Strategy for Heterogeneous Dynamic Scheduling",
+          "authors": [
+            "Nathan Grinsztajn",
+            "Olivier Beaumont",
+            "Emmanuel Jeannot",
+            "Philippe Preux"
+          ],
+          "year": 2021,
+          "url": "https://doi.org/10.1109/cluster48925.2021.00031",
+          "ids": {
+            "doi": "10.1109/cluster48925.2021.00031"
+          }
+        },
+        {
+          "provider": "crossref",
+          "title": "A Partially-Supervised Reinforcement Learning Framework for Visual Active Search",
+          "authors": [
+            "Anindya Sarkar",
+            "Nathan Jacobs",
+            "Yevgeniy Vorobeychik"
+          ],
+          "year": 2023,
+          "url": "https://doi.org/10.52202/075280-0537",
+          "ids": {
+            "doi": "10.52202/075280-0537"
+          }
+        }
+      ],
+      "patch": {
+        "url": "https://doi.org/10.48550/arxiv.2106.04480"
+      }
+    },
+    {
+      "key": "turner2020",
+      "verdict": "likely",
+      "entry_type": "inproceedings",
+      "category": "academic",
+      "score": 0.792,
+      "reasons": [
+        "Likely match with score 0.79"
+      ],
+      "candidates": [
+        {
+          "provider": "openalex",
+          "title": "Conservative Agency via Attainable Utility Preservation",
+          "authors": [
+            "Alexander Matt Turner",
+            "Dylan Hadfield-Menell",
+            "Prasad Tadepalli"
+          ],
+          "year": 2020,
+          "url": "https://doi.org/10.1145/3375627.3375851",
+          "ids": {
+            "doi": "10.1145/3375627.3375851",
+            "openalex": "https://openalex.org/W2916350282"
+          }
+        },
+        {
+          "provider": "crossref",
+          "title": "Conservative Agency via Attainable Utility Preservation",
+          "authors": [
+            "Alexander Matt Turner",
+            "Dylan Hadfield-Menell",
+            "Prasad Tadepalli"
+          ],
+          "year": 2020,
+          "url": "https://doi.org/10.1145/3375627.3375851",
+          "ids": {
+            "doi": "10.1145/3375627.3375851"
+          }
+        },
+        {
+          "provider": "dblp",
+          "title": "Conservative Agency via Attainable Utility Preservation.",
+          "authors": [
+            "Alexander Matt Turner",
+            "Dylan Hadfield-Menell",
+            "Prasad Tadepalli"
+          ],
+          "year": 2020,
+          "url": "https://doi.org/10.1145/3375627.3375851",
+          "ids": {
+            "doi": "10.1145/3375627.3375851"
+          }
+        }
+      ],
+      "patch": {
+        "url": "https://doi.org/10.1145/3375627.3375851"
+      }
+    },
+    {
+      "key": "garcia1987sagas",
+      "verdict": "likely",
+      "entry_type": "article",
+      "category": "academic",
+      "score": 0.8,
+      "reasons": [
+        "Likely match with score 0.80"
+      ],
+      "candidates": [
+        {
+          "provider": "openalex",
+          "title": "Sagas",
+          "authors": [
+            "Héctor García-Molina",
+            "Kenneth Salem"
+          ],
+          "year": 1987,
+          "url": "https://doi.org/10.1145/38714.38742",
+          "ids": {
+            "doi": "10.1145/38714.38742",
+            "openalex": "https://openalex.org/W4242219076"
+          }
+        },
+        {
+          "provider": "crossref",
+          "title": "Sagas",
+          "authors": [
+            "Hector Garcia-Molina",
+            "Kenneth Salem"
+          ],
+          "year": 1987,
+          "url": "https://doi.org/10.1145/38714.38742",
+          "ids": {
+            "doi": "10.1145/38714.38742"
+          }
+        },
+        {
+          "provider": "semantic_scholar",
+          "title": "Sagas",
+          "authors": [
+            "H. Garcia-Molina",
+            "K. Salem"
+          ],
+          "year": 1987,
+          "url": "https://www.semanticscholar.org/paper/cbaa38ba94a45140ee0157ed584b93ccf1323266",
+          "ids": {
+            "doi": "10.1145/38714.38742"
+          }
+        }
+      ],
+      "patch": {
+        "url": "https://doi.org/10.1145/38714.38742"
+      }
+    },
+    {
+      "key": "leveson2011",
+      "verdict": "unverified",
+      "entry_type": "book",
+      "category": "book",
+      "score": 0.5,
+      "reasons": [
+        "Best score 0.50 below threshold"
+      ],
+      "candidates": [
+        {
+          "provider": "crossref",
+          "title": "Engineering a Safer World",
+          "authors": [
+            "Nancy G. Leveson"
+          ],
+          "year": 2012,
+          "url": "https://doi.org/10.7551/mitpress/8179.001.0001",
+          "ids": {
+            "doi": "10.7551/mitpress/8179.001.0001"
+          }
+        },
+        {
+          "provider": "crossref",
+          "title": "Applying systems thinking to analyze and learn from events",
+          "authors": [
+            "Nancy G. Leveson"
+          ],
+          "year": 2011,
+          "url": "https://doi.org/10.1016/j.ssci.2009.12.021",
+          "ids": {
+            "doi": "10.1016/j.ssci.2009.12.021"
+          }
+        },
+        {
+          "provider": "openalex",
+          "title": "Rethinking the thinking cap",
+          "authors": [
+            "Roy H. Hamilton",
+            "Samuel B. Messing",
+            "Anjan Chatterjee"
+          ],
+          "year": 2011,
+          "url": "https://doi.org/10.1212/wnl.0b013e318205d50d",
+          "ids": {
+            "doi": "10.1212/wnl.0b013e318205d50d",
+            "openalex": "https://openalex.org/W2073770339"
+          }
+        }
+      ],
+      "patch": {}
+    },
+    {
+      "key": "lynch1988",
+      "verdict": "likely",
+      "entry_type": "article",
+      "category": "academic",
+      "score": 0.7,
+      "reasons": [
+        "Likely match with score 0.70"
+      ],
+      "candidates": [
+        {
+          "provider": "dblp",
+          "title": "Introduction to the Theory of Nested Transactions.",
+          "authors": [
+            "Nancy A. Lynch",
+            "Michael Merritt"
+          ],
+          "year": 1988,
+          "url": "https://doi.org/10.1016/0304-3975(86)90014-9",
+          "ids": {
+            "doi": "10.1016/0304-3975(86)90014-9"
+          }
+        },
+        {
+          "provider": "openalex",
+          "title": "Introduction to the theory of nested transactions",
+          "authors": [
+            "Nancy Lynch",
+            "Michael Merritt"
+          ],
+          "year": 1986,
+          "url": "https://doi.org/10.1016/0304-3975(86)90014-9",
+          "ids": {
+            "doi": "10.1016/0304-3975(86)90014-9",
+            "openalex": "https://openalex.org/W2114811697"
+          }
+        },
+        {
+          "provider": "crossref",
+          "title": "Introduction to the theory of nested transactions",
+          "authors": [
+            "Nancy Lynch",
+            "Michael Merritt"
+          ],
+          "year": 1986,
+          "url": "https://doi.org/10.1016/0304-3975(86)90014-9",
+          "ids": {
+            "doi": "10.1016/0304-3975(86)90014-9"
+          }
+        }
+      ],
+      "patch": {
+        "url": "https://doi.org/10.1016/0304-3975(86)90014-9"
+      }
+    },
+    {
+      "key": "dhodapkar2026safetydrift",
+      "verdict": "verified",
+      "entry_type": "misc",
+      "category": "non_searchable",
+      "score": 0.0,
+      "reasons": [
+        "misc entry with URL"
+      ],
+      "candidates": [],
+      "patch": {}
+    },
+    {
+      "key": "delrosario2025planex",
+      "verdict": "verified",
+      "entry_type": "misc",
+      "category": "non_searchable",
+      "score": 0.0,
+      "reasons": [
+        "misc entry with URL"
+      ],
+      "candidates": [],
+      "patch": {}
+    },
+    {
+      "key": "young2010cqrs",
+      "verdict": "verified",
+      "entry_type": "misc",
+      "category": "non_searchable",
+      "score": 0.0,
+      "reasons": [
+        "misc entry with URL"
+      ],
+      "candidates": [],
+      "patch": {}
+    },
+    {
+      "key": "camarques2024cqrs",
+      "verdict": "verified",
+      "entry_type": "misc",
+      "category": "non_searchable",
+      "score": 0.0,
+      "reasons": [
+        "misc entry with URL"
+      ],
+      "candidates": [],
+      "patch": {}
+    },
+    {
+      "key": "beurerkellner2025patterns",
+      "verdict": "verified",
+      "entry_type": "misc",
+      "category": "non_searchable",
+      "score": 0.0,
+      "reasons": [
+        "misc entry with URL"
+      ],
+      "candidates": [],
+      "patch": {}
+    },
+    {
+      "key": "reversec2025patterns",
+      "verdict": "verified",
+      "entry_type": "misc",
+      "category": "non_searchable",
+      "score": 0.0,
+      "reasons": [
+        "misc entry with URL"
+      ],
+      "candidates": [],
+      "patch": {}
+    },
+    {
+      "key": "hua2024trustagent",
+      "verdict": "verified",
+      "entry_type": "misc",
+      "category": "non_searchable",
+      "score": 0.0,
+      "reasons": [
+        "misc entry with URL"
+      ],
+      "candidates": [],
+      "patch": {}
+    },
+    {
+      "key": "ouyang2022rlhf",
+      "verdict": "likely",
+      "entry_type": "inproceedings",
+      "category": "academic",
+      "score": 0.775,
+      "reasons": [
+        "Likely match with score 0.77"
+      ],
+      "candidates": [
+        {
+          "provider": "crossref",
+          "title": "Training Language Models to Follow Instructions with Human Feedback",
+          "authors": [
+            "Long Ouyang",
+            "Jeffrey Wu",
+            "Xu Jiang",
+            "Diogo Almeida",
+            "Carroll Wainwright",
+            "Pamela Mishkin",
+            "Chong Zhang",
+            "Sandhini Agarwal",
+            "Katarina Slama",
+            "Alex Ray",
+            "John Schulman",
+            "Jacob Hilton",
+            "Fraser Kelton",
+            "Luke Miller",
+            "Maddie Simens",
+            "Amanda Askell",
+            "Peter Welinder",
+            "Paul Christiano",
+            "Jan Leike",
+            "Ryan Lowe"
+          ],
+          "year": 2022,
+          "url": "https://doi.org/10.52202/068431-2011",
+          "ids": {
+            "doi": "10.52202/068431-2011"
+          }
+        },
+        {
+          "provider": "semantic_scholar",
+          "title": "Training language models to follow instructions with human feedback",
+          "authors": [
+            "Long Ouyang",
+            "Jeff Wu",
+            "Xu Jiang",
+            "Diogo Almeida",
+            "Carroll L. Wainwright",
+            "Pamela Mishkin",
+            "Chong Zhang",
+            "S. Agarwal",
+            "Katarina Slama",
+            "Alex Ray",
+            "John Schulman",
+            "Jacob Hilton",
+            "Fraser Kelton",
+            "Luke E. Miller",
+            "M. Simens",
+            "Amanda Askell",
+            "Peter Welinder",
+            "P. Christiano",
+            "Jan Leike",
+            "Ryan J. Lowe"
+          ],
+          "year": 2022,
+          "url": "https://www.semanticscholar.org/paper/d766bffc357127e0dc86dd69561d5aeb520d6f4c",
+          "ids": {
+            "doi": "10.52202/068431-2011",
+            "arxiv": "2203.02155"
+          }
+        },
+        {
+          "provider": "dblp",
+          "title": "Training language models to follow instructions with human feedback.",
+          "authors": [
+            "Long Ouyang",
+            "Jeffrey Wu 0003",
+            "Xu Jiang",
+            "Diogo Almeida",
+            "Carroll L. Wainwright",
+            "Pamela Mishkin",
+            "Chong Zhang",
+            "Sandhini Agarwal",
+            "Katarina Slama",
+            "Alex Ray",
+            "John Schulman",
+            "Jacob Hilton",
+            "Fraser Kelton",
+            "Luke Miller",
+            "Maddie Simens",
+            "Amanda Askell",
+            "Peter Welinder",
+            "Paul F. Christiano",
+            "Jan Leike",
+            "Ryan Lowe"
+          ],
+          "year": 2022,
+          "url": "http://papers.nips.cc/paper_files/paper/2022/hash/b1efde53be364a73914f58805a001731-Abstract-Conference.html",
+          "ids": {}
+        }
+      ],
+      "patch": {
+        "url": "https://doi.org/10.52202/068431-2011"
+      }
+    },
+    {
+      "key": "bai2022cai",
+      "verdict": "verified",
+      "entry_type": "misc",
+      "category": "non_searchable",
+      "score": 0.0,
+      "reasons": [
+        "misc entry with URL"
+      ],
+      "candidates": [],
+      "patch": {}
+    },
+    {
+      "key": "wallace2024hierarchy",
+      "verdict": "verified",
+      "entry_type": "misc",
+      "category": "non_searchable",
+      "score": 0.0,
+      "reasons": [
+        "misc entry with URL"
+      ],
+      "candidates": [],
+      "patch": {}
+    },
+    {
+      "key": "hines2024spotlighting",
+      "verdict": "verified",
+      "entry_type": "misc",
+      "category": "non_searchable",
+      "score": 0.0,
+      "reasons": [
+        "misc entry with URL"
+      ],
+      "candidates": [],
+      "patch": {}
+    },
+    {
+      "key": "greshake2023",
+      "verdict": "verified",
+      "entry_type": "misc",
+      "category": "non_searchable",
+      "score": 0.0,
+      "reasons": [
+        "misc entry with URL"
+      ],
+      "candidates": [],
+      "patch": {}
+    },
+    {
+      "key": "debenedetti2024agentdojo",
+      "verdict": "likely",
+      "entry_type": "inproceedings",
+      "category": "academic",
+      "score": 0.75,
+      "reasons": [
+        "Likely match with score 0.75"
+      ],
+      "candidates": [
+        {
+          "provider": "crossref",
+          "title": "AgentDojo: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for LLM Agents",
+          "authors": [
+            "Edoardo Debenedetti",
+            "Jie Zhang",
+            "Mislav Balunovic",
+            "Luca Beurer-Kellner",
+            "Marc Fischer",
+            "Florian Tramèr"
+          ],
+          "year": 2024,
+          "url": "https://doi.org/10.52202/079017-2636",
+          "ids": {
+            "doi": "10.52202/079017-2636"
+          }
+        },
+        {
+          "provider": "semantic_scholar",
+          "title": "AgentDojo: A Dynamic Environment to Evaluate Attacks and Defenses for LLM Agents",
+          "authors": [
+            "Edoardo Debenedetti",
+            "Jie Zhang",
+            "Mislav Balunovi'c",
+            "Luca Beurer-Kellner",
+            "Marc Fischer",
+            "F. Tramèr"
+          ],
+          "year": 2024,
+          "url": "https://www.semanticscholar.org/paper/cf95279b1da9de1aad9e7c651f5048f69af295ed",
+          "ids": {
+            "doi": "10.48550/arXiv.2406.13352",
+            "arxiv": "2406.13352"
+          }
+        },
+        {
+          "provider": "crossref",
+          "title": "HackCar: a test platform for attacks and defenses on a cost-contained automotive architecture",
+          "authors": [
+            "Dario Stabili",
+            "Filip Valgimigli",
+            "Edoardo Torrini",
+            "Mirco Marchetti"
+          ],
+          "year": 2024,
+          "url": "https://doi.org/10.1109/iv55156.2024.10588738",
+          "ids": {
+            "doi": "10.1109/iv55156.2024.10588738"
+          }
+        }
+      ],
+      "patch": {
+        "url": "https://doi.org/10.52202/079017-2636"
+      }
+    },
+    {
+      "key": "debenedetti2025camel",
+      "verdict": "verified",
+      "entry_type": "misc",
+      "category": "non_searchable",
+      "score": 0.0,
+      "reasons": [
+        "misc entry with URL"
+      ],
+      "candidates": [],
+      "patch": {}
+    },
+    {
+      "key": "yao2023react",
+      "verdict": "likely",
+      "entry_type": "inproceedings",
+      "category": "academic",
+      "score": 0.717,
+      "reasons": [
+        "Likely match with score 0.72"
+      ],
+      "candidates": [
+        {
+          "provider": "dblp",
+          "title": "ReAct: Synergizing Reasoning and Acting in Language Models.",
+          "authors": [
+            "Shunyu Yao 0006",
+            "Jeffrey Zhao",
+            "Dian Yu",
+            "Nan Du 0002",
+            "Izhak Shafran",
+            "Karthik R. Narasimhan",
+            "Yuan Cao 0007"
+          ],
+          "year": 2023,
+          "url": "https://openreview.net/forum?id=WE_vluYUL-X",
+          "ids": {}
+        },
+        {
+          "provider": "dblp",
+          "title": "ReAct: Synergizing Reasoning and Acting in Language Models.",
+          "authors": [
+            "Shunyu Yao 0006",
+            "Jeffrey Zhao",
+            "Dian Yu",
+            "Nan Du 0002",
+            "Izhak Shafran",
+            "Karthik Narasimhan",
+            "Yuan Cao 0007"
+          ],
+          "year": 2022,
+          "url": "https://doi.org/10.48550/arXiv.2210.03629",
+          "ids": {
+            "doi": "10.48550/ARXIV.2210.03629"
+          }
+        },
+        {
+          "provider": "crossref",
+          "title": "Improving Spatial Reasoning in Vision-Language Models via Chain-of-Thought Annotation and Reinforcement Learning",
+          "authors": [
+            "Tuohan Huang",
+            "Shunyu Rao"
+          ],
+          "year": 2025,
+          "url": "https://doi.org/10.1145/3773365.3773401",
+          "ids": {
+            "doi": "10.1145/3773365.3773401"
+          }
+        }
+      ],
+      "patch": {
+        "url": "https://openreview.net/forum?id=WE_vluYUL-X"
+      }
+    },
+    {
+      "key": "yao2024taubench",
+      "verdict": "verified",
+      "entry_type": "misc",
+      "category": "non_searchable",
+      "score": 0.0,
+      "reasons": [
+        "misc entry with URL"
+      ],
+      "candidates": [],
+      "patch": {}
+    },
+    {
+      "key": "ruan2024toolemu",
+      "verdict": "unverified",
+      "entry_type": "inproceedings",
+      "category": "academic",
+      "score": 0.683,
+      "reasons": [
+        "Best score 0.68 below threshold"
+      ],
+      "candidates": [
+        {
+          "provider": "semantic_scholar",
+          "title": "Identifying the Risks of LM Agents with an LM-Emulated Sandbox",
+          "authors": [
+            "Yangjun Ruan",
+            "Honghua Dong",
+            "Andrew Wang",
+            "Silviu Pitis",
+            "Yongchao Zhou",
+            "Jimmy Ba",
+            "Yann Dubois",
+            "Chris J. Maddison",
+            "Tatsunori Hashimoto"
+          ],
+          "year": 2023,
+          "url": "https://www.semanticscholar.org/paper/0a893657e00fe8ecfadcc65c63bf293e70cb1564",
+          "ids": {
+            "doi": "10.48550/arXiv.2309.15817",
+            "arxiv": "2309.15817"
+          }
+        },
+        {
+          "provider": "openalex",
+          "title": "Identifying the Risks of LM Agents with an LM-Emulated Sandbox",
+          "authors": [
+            "Yangjun Ruan",
+            "Honghua Dong",
+            "Andrew Wang",
+            "Silviu Pitis",
+            "Yongchao Zhou",
+            "Jimmy Ba",
+            "Yann Dubois",
+            "Chris J. Maddison",
+            "Tatsunori Hashimoto"
+          ],
+          "year": 2023,
+          "url": "https://doi.org/10.48550/arxiv.2309.15817",
+          "ids": {
+            "doi": "10.48550/arxiv.2309.15817",
+            "openalex": "https://openalex.org/W4387164935"
+          }
+        },
+        {
+          "provider": "crossref",
+          "title": "Transformer Hot Spot Temperature Prediction Method Based on LM-UGO Algorithm",
+          "authors": [
+            "Qianyi Chen",
+            "Shifeng Ou",
+            "Yangjun Zhou",
+            "Kewen Li",
+            "Weixiang Huang"
+          ],
+          "year": 2024,
+          "url": "https://doi.org/10.1007/978-981-97-1447-6_66",
+          "ids": {
+            "doi": "10.1007/978-981-97-1447-6_66"
+          }
+        }
+      ],
+      "patch": {}
+    },
+    {
+      "key": "andriushchenko2025agentharm",
+      "verdict": "unverified",
+      "entry_type": "inproceedings",
+      "category": "academic",
+      "score": 0.683,
+      "reasons": [
+        "Best score 0.68 below threshold"
+      ],
+      "candidates": [
+        {
+          "provider": "semantic_scholar",
+          "title": "AgentHarm: A Benchmark for Measuring Harmfulness of LLM Agents",
+          "authors": [
+            "Maksym Andriushchenko",
+            "Alexandra Souly",
+            "Mateusz Dziemian",
+            "Derek Duenas",
+            "Maxwell Lin",
+            "Justin Wang",
+            "Dan Hendrycks",
+            "Andy Zou",
+            "Zico Kolter",
+            "Matt Fredrikson",
+            "Eric Winsor",
+            "Jerome Wynne",
+            "Yarin Gal",
+            "Xander Davies"
+          ],
+          "year": 2024,
+          "url": "https://www.semanticscholar.org/paper/716c6f6a6e653bebfa676402b887fe2927e06c73",
+          "ids": {
+            "doi": "10.48550/arXiv.2410.09024",
+            "arxiv": "2410.09024"
+          }
+        },
+        {
+          "provider": "openalex",
+          "title": "AgentHarm: A Benchmark for Measuring Harmfulness of LLM Agents",
+          "authors": [
+            "Maksym Andriushchenko",
+            "Alexandra Souly",
+            "Mateusz Dziemian",
+            "Derek Duenas",
+            "Maxwell Lin",
+            "Justin Wang",
+            "Dan Hendrycks",
+            "Andy Zou",
+            "J. Zico Kolter",
+            "Matt Fredrikson",
+            "Eric Winsor",
+            "Jerome Wynne",
+            "Yarin Gal",
+            "Xander Davies"
+          ],
+          "year": 2024,
+          "url": "https://doi.org/10.48550/arxiv.2410.09024",
+          "ids": {
+            "doi": "10.48550/arxiv.2410.09024",
+            "openalex": "https://openalex.org/W4403564213"
+          }
+        },
+        {
+          "provider": "crossref",
+          "title": "OS-Harm: A Benchmark for Measuring Safety of Computer Use Agents",
+          "authors": [
+            "Thomas Kuntz",
+            "Agatha Duzan",
+            "Hao Zhao",
+            "Francesco Croce",
+            "Zico Kolter",
+            "Nicolas Flammarion",
+            "Maksym Andriushchenko"
+          ],
+          "year": 2025,
+          "url": "https://doi.org/10.52202/085713-1502",
+          "ids": {
+            "doi": "10.52202/085713-1502"
+          }
+        }
+      ],
+      "patch": {}
+    },
+    {
+      "key": "liu2024agentbench",
+      "verdict": "likely",
+      "entry_type": "inproceedings",
+      "category": "academic",
+      "score": 0.717,
+      "reasons": [
+        "Likely match with score 0.72"
+      ],
+      "candidates": [
+        {
+          "provider": "dblp",
+          "title": "AgentBench: Evaluating LLMs as Agents.",
+          "authors": [
+            "Xiao Liu 0036",
+            "Hao Yu 0030",
+            "Hanchen Zhang",
+            "Yifan Xu 0014",
+            "Xuanyu Lei",
+            "Hanyu Lai",
+            "Yu Gu 0016",
+            "Hangliang Ding",
+            "Kaiwen Men",
+            "Kejuan Yang",
+            "Shudan Zhang",
+            "Xiang Deng 0001",
+            "Aohan Zeng",
+            "Zhengxiao Du",
+            "Chenhui Zhang",
+            "Sheng Shen 0001",
+            "Tianjun Zhang",
+            "Yu Su 0001",
+            "Huan Sun 0001",
+            "Minlie Huang",
+            "Yuxiao Dong",
+            "Jie Tang 0001"
+          ],
+          "year": 2024,
+          "url": "https://openreview.net/forum?id=zAdUB0aCTQ",
+          "ids": {}
+        },
+        {
+          "provider": "semantic_scholar",
+          "title": "AgentBench: Evaluating LLMs as Agents",
+          "authors": [
+            "Xiao Liu",
+            "Hao Yu",
+            "Hanchen Zhang",
+            "Yifan Xu",
+            "Xuanyu Lei",
+            "Hanyu Lai",
+            "Yu Gu",
+            "Yuxian Gu",
+            "Han Ding",
+            "Kai Men",
+            "Kejuan Yang",
+            "Shudan Zhang",
+            "Xiang Deng",
+            "Aohan Zeng",
+            "Zhengxiao Du",
+            "Chenhui Zhang",
+            "Shengqi Shen",
+            "Tianjun Zhang",
+            "Sheng Shen",
+            "Yu Su",
+            "Huan Sun",
+            "Minlie Huang",
+            "Yuxiao Dong",
+            "Jie Tang"
+          ],
+          "year": 2023,
+          "url": "https://www.semanticscholar.org/paper/5dbf93a68b7fda600521f046dea35ea8ba9e884f",
+          "ids": {
+            "doi": "10.48550/arXiv.2308.03688",
+            "arxiv": "2308.03688"
+          }
+        },
+        {
+          "provider": "openalex",
+          "title": "AgentBench: Evaluating LLMs as Agents",
+          "authors": [
+            "Xiao Liu",
+            "Hao Yu",
+            "Hanchen Zhang",
+            "Yifan Xu",
+            "Xuanyu Lei",
+            "Hanyu Lai",
+            "Yu‐Cheng Gu",
+            "Hangliang Ding",
+            "Kaiwen Men",
+            "Kejuan Yang",
+            "Shudan Zhang",
+            "Xiang Deng",
+            "Aohan Zeng",
+            "Zhengxiao Du",
+            "Chenhui Zhang",
+            "Sheng Shen",
+            "Tianjun Zhang",
+            "Yu Su",
+            "Huan Sun",
+            "Minlie Huang",
+            "Yuxiao Dong",
+            "Jie Tang"
+          ],
+          "year": 2023,
+          "url": "https://doi.org/10.48550/arxiv.2308.03688",
+          "ids": {
+            "doi": "10.48550/arxiv.2308.03688",
+            "openalex": "https://openalex.org/W4385682136"
+          }
+        }
+      ],
+      "patch": {
+        "url": "https://openreview.net/forum?id=zAdUB0aCTQ"
+      }
+    },
+    {
+      "key": "mccann2026governance",
+      "verdict": "verified",
+      "entry_type": "misc",
+      "category": "non_searchable",
+      "score": 0.0,
+      "reasons": [
+        "misc entry with DOI"
+      ],
+      "candidates": [],
+      "patch": {}
+    },
+    {
+      "key": "fokou2026parallax",
+      "verdict": "verified",
+      "entry_type": "misc",
+      "category": "non_searchable",
+      "score": 0.0,
+      "reasons": [
+        "misc entry with DOI"
+      ],
+      "candidates": [],
+      "patch": {}
+    }
+  ],
+  "llm_results": []
+}

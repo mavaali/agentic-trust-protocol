@@ -13,7 +13,7 @@ class LLMClient:
     """Thin wrapper around the Anthropic SDK for agent use."""
 
     model: str = "claude-sonnet-4-20250514"
-    max_tokens: int = 4096
+    max_tokens: int = 8192
     _client: anthropic.Anthropic | None = field(default=None, repr=False)
     chat_count: int = 0
 

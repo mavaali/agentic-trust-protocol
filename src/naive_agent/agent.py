@@ -68,43 +68,50 @@ class NaiveAgent:
                         console.print(f"[bold green]Agent:[/bold green] {block.text}")
                 break
 
-            if response.stop_reason == "tool_use":
-                tool_results = []
-                for block in assistant_content:
-                    if block.type == "tool_use":
-                        tool_name = block.name
-                        tool_input = block.input
+            # Answer every emitted tool_use block regardless of stop_reason (see
+            # read_path.py): a turn ending on max_tokens mid-batch still carries
+            # tool_use blocks that must be answered before the next request.
+            tool_use_blocks = [
+                b for b in assistant_content if getattr(b, "type", None) == "tool_use"
+            ]
+            if not tool_use_blocks:
+                break
 
-                        logger.info(
-                            "tool_call",
-                            tool=tool_name,
-                            input=tool_input,
-                            step=step,
-                            scenario=scenario_id,
-                        )
-                        console.print(
-                            f"[yellow]Step {step}:[/yellow] {tool_name}({json.dumps(tool_input, indent=2)})"
-                        )
+            tool_results = []
+            for block in tool_use_blocks:
+                tool_name = block.name
+                tool_input = block.input
 
-                        result = self.tool_executor.execute(tool_name, tool_input)
-                        console.print(f"[dim]{result[:200]}...[/dim]" if len(result) > 200 else f"[dim]{result}[/dim]")
+                logger.info(
+                    "tool_call",
+                    tool=tool_name,
+                    input=tool_input,
+                    step=step,
+                    scenario=scenario_id,
+                )
+                console.print(
+                    f"[yellow]Step {step}:[/yellow] {tool_name}({json.dumps(tool_input, indent=2)})"
+                )
 
-                        trace = ActionTrace(
-                            agent_type="naive",
-                            scenario_id=scenario_id,
-                            step=step,
-                            action_type=tool_name,
-                            action_params=tool_input,
-                        )
-                        self.traces.append(trace)
+                result = self.tool_executor.execute(tool_name, tool_input)
+                console.print(f"[dim]{result[:200]}...[/dim]" if len(result) > 200 else f"[dim]{result}[/dim]")
 
-                        tool_results.append({
-                            "type": "tool_result",
-                            "tool_use_id": block.id,
-                            "content": result,
-                        })
+                trace = ActionTrace(
+                    agent_type="naive",
+                    scenario_id=scenario_id,
+                    step=step,
+                    action_type=tool_name,
+                    action_params=tool_input,
+                )
+                self.traces.append(trace)
 
-                messages.append({"role": "user", "content": tool_results})
+                tool_results.append({
+                    "type": "tool_result",
+                    "tool_use_id": block.id,
+                    "content": result,
+                })
+
+            messages.append({"role": "user", "content": tool_results})
 
         return self.traces
 
